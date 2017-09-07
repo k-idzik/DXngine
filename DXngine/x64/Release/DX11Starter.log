@@ -1,0 +1,10 @@
+﻿  compilation object save succeeded; see C:\Users\Kevin Idzik\Desktop\Files\Important Files\College\4th Year\IGME-540\DX11\x64\Release\PixelShader.cso
+  compilation object save succeeded; see C:\Users\Kevin Idzik\Desktop\Files\Important Files\College\4th Year\IGME-540\DX11\x64\Release\VertexShader.cso
+  DXCore.cpp
+  Game.cpp
+  Main.cpp
+  SimpleShader.cpp
+  Generating code
+  All 1414 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  DX11Starter.vcxproj -> C:\Users\Kevin Idzik\Desktop\Files\Important Files\College\4th Year\IGME-540\DX11\x64\Release\DX11Starter.exe

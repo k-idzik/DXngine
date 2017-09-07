@@ -1,0 +1,10 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: The intermediate directory (x64\Debug\) contains files shared from another project (DX11Starter.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  compilation object save succeeded; see C:\Users\Kevin Idzik\Desktop\Files\Important Files\College\4th Year\IGME-540\DX11\x64\Debug\PixelShader.cso
+  compilation object save succeeded; see C:\Users\Kevin Idzik\Desktop\Files\Important Files\College\4th Year\IGME-540\DX11\x64\Debug\VertexShader.cso
+  Skipping... (no relevant changes detected)
+  SimpleShader.cpp
+  Main.cpp
+  Game.cpp
+  DXCore.cpp
+  DX11Starter.vcxproj -> C:\Users\Kevin Idzik\Desktop\Files\Important Files\College\4th Year\IGME-540\DX11\x64\Debug\DXngine.exe
+  DX11Starter.vcxproj -> C:\Users\Kevin Idzik\Desktop\Files\Important Files\College\4th Year\IGME-540\DX11\x64\Debug\DXngine.pdb (Partial PDB)
