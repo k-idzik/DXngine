@@ -50,6 +50,14 @@ Game::~Game()
 	// will clean up their own internal DirectX stuff
 	delete vertexShader;
 	delete pixelShader;
+
+	///Delete mesh objects
+	if (triangle)
+		delete triangle;
+	if (square)
+		delete square;
+	if (hexagon)
+		delete hexagon;
 }
 
 // --------------------------------------------------------
@@ -141,15 +149,17 @@ void Game::CreateBasicGeometry()
 	XMFLOAT4 red = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 	XMFLOAT4 green = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	XMFLOAT4 blue = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+	XMFLOAT4 yellow = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
 
+	///TRIANGLE
 	// Set up the vertices of the triangle we would like to draw
 	// - We're going to copy this array, exactly as it exists in memory
 	//    over to a DirectX-controlled data structure (the vertex buffer)
-	Vertex vertices[] =
+	Vertex triangleVertices[] =
 	{
-		{ XMFLOAT3(+0.0f, +1.0f, +0.0f), red },
-		{ XMFLOAT3(+1.5f, -1.0f, +0.0f), blue },
-		{ XMFLOAT3(-1.5f, -1.0f, +0.0f), green },
+		{ XMFLOAT3(-2.5f, +0.5f, +0.0f), red },
+		{ XMFLOAT3(-2.0f, -0.5f, +0.0f), green },
+		{ XMFLOAT3(-3.0f, -0.5f, +0.0f), blue },
 	};
 
 	// Set up the indices, which tell us which vertices to use and in which order
@@ -157,50 +167,54 @@ void Game::CreateBasicGeometry()
 	// - Indices are technically not required if the vertices are in the buffer 
 	//    in the correct order and each one will be used exactly once
 	// - But just to see how it's done...
-	int indices[] = { 0, 1, 2 };
+	unsigned int triangleIndices[] = { 0, 1, 2 };
 
+	triangle = new Mesh(triangleVertices, sizeofArray(triangleVertices), triangleIndices, sizeofArray(triangleIndices), device);
+	
+	///SQUARE
+	// Set up the vertices of the triangle we would like to draw
+	// - We're going to copy this array, exactly as it exists in memory
+	//    over to a DirectX-controlled data structure (the vertex buffer)
+	Vertex squareVertices[] =
+	{
+		{ XMFLOAT3(-0.5f, +0.5f, +0.0f), red },
+		{ XMFLOAT3(+0.5f, +0.5f, +0.0f), green },
+		{ XMFLOAT3(+0.5f, -0.5f, +0.0f), blue },
+		{ XMFLOAT3(-0.5f, -0.5f, +0.0f), yellow },
+	};
 
-	// Create the VERTEX BUFFER description -----------------------------------
-	// - The description is created on the stack because we only need
-	//    it to create the buffer.  The description is then useless.
-	D3D11_BUFFER_DESC vbd;
-	vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	vbd.ByteWidth = sizeof(Vertex) * 3;       // 3 = number of vertices in the buffer
-	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER; // Tells DirectX this is a vertex buffer
-	vbd.CPUAccessFlags = 0;
-	vbd.MiscFlags = 0;
-	vbd.StructureByteStride = 0;
+	// Set up the indices, which tell us which vertices to use and in which order
+	// - This is somewhat redundant for just 3 vertices (it's a simple example)
+	// - Indices are technically not required if the vertices are in the buffer 
+	//    in the correct order and each one will be used exactly once
+	// - But just to see how it's done...
+	unsigned int squareIndices[] = { 0, 1, 2, 0, 2, 3 };
 
-	// Create the proper struct to hold the initial vertex data
-	// - This is how we put the initial data into the buffer
-	D3D11_SUBRESOURCE_DATA initialVertexData;
-	initialVertexData.pSysMem = vertices;
+	square = new Mesh(squareVertices, sizeofArray(squareVertices), squareIndices, sizeofArray(squareIndices), device);
 
-	// Actually create the buffer with the initial data
-	// - Once we do this, we'll NEVER CHANGE THE BUFFER AGAIN
-	device->CreateBuffer(&vbd, &initialVertexData, &vertexBuffer);
+	///HEXAGON
+	// Set up the vertices of the triangle we would like to draw
+	// - We're going to copy this array, exactly as it exists in memory
+	//    over to a DirectX-controlled data structure (the vertex buffer)
+	Vertex hexagonVertices[] =
+	{
+		{ XMFLOAT3(+2.0f, +0.0f, +0.0f), yellow },
+		{ XMFLOAT3(+2.0f, +0.5f, +0.0f), red },
+		{ XMFLOAT3(+2.25f, +0.25f, +0.0f), green },
+		{ XMFLOAT3(+2.25f, -0.25f, +0.0f), blue },
+		{ XMFLOAT3(+2.0f, -0.5f, +0.0f), red },
+		{ XMFLOAT3(+1.75f, -0.25f, +0.0f), green },
+		{ XMFLOAT3(+1.75f, +0.25f, +0.0f), blue },
+	};
 
+	// Set up the indices, which tell us which vertices to use and in which order
+	// - This is somewhat redundant for just 3 vertices (it's a simple example)
+	// - Indices are technically not required if the vertices are in the buffer 
+	//    in the correct order and each one will be used exactly once
+	// - But just to see how it's done...
+	unsigned int hexagonIndices[] = { 0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 1 };
 
-
-	// Create the INDEX BUFFER description ------------------------------------
-	// - The description is created on the stack because we only need
-	//    it to create the buffer.  The description is then useless.
-	D3D11_BUFFER_DESC ibd;
-	ibd.Usage = D3D11_USAGE_IMMUTABLE;
-	ibd.ByteWidth = sizeof(int) * 3;         // 3 = number of indices in the buffer
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER; // Tells DirectX this is an index buffer
-	ibd.CPUAccessFlags = 0;
-	ibd.MiscFlags = 0;
-	ibd.StructureByteStride = 0;
-
-	// Create the proper struct to hold the initial index data
-	// - This is how we put the initial data into the buffer
-	D3D11_SUBRESOURCE_DATA initialIndexData;
-	initialIndexData.pSysMem = indices;
-
-	// Actually create the buffer with the initial data
-	// - Once we do this, we'll NEVER CHANGE THE BUFFER AGAIN
-	device->CreateBuffer(&ibd, &initialIndexData, &indexBuffer);
+	hexagon = new Mesh(hexagonVertices, sizeofArray(hexagonVertices), hexagonIndices, sizeofArray(hexagonIndices), device);
 }
 
 
@@ -271,13 +285,14 @@ void Game::Draw(float deltaTime, float totalTime)
 	vertexShader->SetShader();
 	pixelShader->SetShader();
 
+	//TRIANGLE
 	// Set buffers in the input assembler
 	//  - Do this ONCE PER OBJECT you're drawing, since each object might
 	//    have different geometry.
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;
-	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-	context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+	context->IASetVertexBuffers(0, 1, triangle->GetVertexBuffer(), &stride, &offset);
+	context->IASetIndexBuffer(triangle->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
 	// Finally do the actual drawing
 	//  - Do this ONCE PER OBJECT you intend to draw
@@ -285,11 +300,43 @@ void Game::Draw(float deltaTime, float totalTime)
 	//  - DrawIndexed() uses the currently set INDEX BUFFER to look up corresponding
 	//     vertices in the currently set VERTEX BUFFER
 	context->DrawIndexed(
-		3,     // The number of indices to use (we could draw a subset if we wanted)
+		triangle->GetIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
 		0,     // Offset to the first index we want to use
 		0);    // Offset to add to each index when looking up vertices
 
+	//SQUARE
+	// Set buffers in the input assembler
+	//  - Do this ONCE PER OBJECT you're drawing, since each object might
+	//    have different geometry.
+	context->IASetVertexBuffers(0, 1, square->GetVertexBuffer(), &stride, &offset);
+	context->IASetIndexBuffer(square->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
+	// Finally do the actual drawing
+	//  - Do this ONCE PER OBJECT you intend to draw
+	//  - This will use all of the currently set DirectX "stuff" (shaders, buffers, etc)
+	//  - DrawIndexed() uses the currently set INDEX BUFFER to look up corresponding
+	//     vertices in the currently set VERTEX BUFFER
+	context->DrawIndexed(
+		square->GetIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
+		0,     // Offset to the first index we want to use
+		0);    // Offset to add to each index when looking up vertices
+
+	//HEXAGON
+	// Set buffers in the input assembler
+	//  - Do this ONCE PER OBJECT you're drawing, since each object might
+	//    have different geometry.
+	context->IASetVertexBuffers(0, 1, hexagon->GetVertexBuffer(), &stride, &offset);
+	context->IASetIndexBuffer(hexagon->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+	// Finally do the actual drawing
+	//  - Do this ONCE PER OBJECT you intend to draw
+	//  - This will use all of the currently set DirectX "stuff" (shaders, buffers, etc)
+	//  - DrawIndexed() uses the currently set INDEX BUFFER to look up corresponding
+	//     vertices in the currently set VERTEX BUFFER
+	context->DrawIndexed(
+		hexagon->GetIndexCount(),     // The number of indices to use (we could draw a subset if we wanted)
+		0,     // Offset to the first index we want to use
+		0);    // Offset to add to each index when looking up vertices
 
 	// Present the back buffer to the user
 	//  - Puts the final frame we're drawing into the window so the user can see it
