@@ -1,17 +1,21 @@
 #pragma once
 
+#include <DirectXMath.h>
 #include "DXCore.h"
 #include "SimpleShader.h"
-#include <DirectXMath.h>
+#include "Mesh.h" //Mesh renderer
 
-class Game 
-	: public DXCore
+///Macro to get the size of an array
+///Not safe if a pointer is passed in, but hopefully nobody does that
+///Macro syntax from https://stackoverflow.com/questions/4415524/common-array-length-macro-for-c
+#define sizeofArray(x) (sizeof(x) / sizeof(*x))
+
+class Game : public DXCore
 {
-
 public:
 	Game(HINSTANCE hInstance);
 	~Game();
-
+	
 	// Overridden setup and game loop methods, which
 	// will be called automatically
 	void Init();
@@ -24,16 +28,12 @@ public:
 	void OnMouseUp	 (WPARAM buttonState, int x, int y);
 	void OnMouseMove (WPARAM buttonState, int x, int y);
 	void OnMouseWheel(float wheelDelta,   int x, int y);
-private:
 
+private:
 	// Initialization helper methods - feel free to customize, combine, etc.
 	void LoadShaders(); 
 	void CreateMatrices();
 	void CreateBasicGeometry();
-
-	// Buffers to hold actual geometry data
-	ID3D11Buffer* vertexBuffer;
-	ID3D11Buffer* indexBuffer;
 
 	// Wrappers for DirectX shaders to provide simplified functionality
 	SimpleVertexShader* vertexShader;
@@ -47,5 +47,9 @@ private:
 	// Keeps track of the old mouse position.  Useful for 
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
-};
 
+	//Create mesh objects, initalize them to NULL because that creates fewer problems
+	Mesh* triangle = NULL;
+	Mesh* square = NULL;
+	Mesh* hexagon = NULL;
+};
