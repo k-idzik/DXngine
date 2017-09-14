@@ -7,8 +7,7 @@
 #include "Mesh.h"
 
 //Less unnecessary repetition, Windows.h could be included instead
-using DirectX::XMFLOAT4X4;
-using DirectX::XMFLOAT3;
+using namespace DirectX;
 
 class Entity
 {
@@ -32,5 +31,8 @@ public:
 	XMFLOAT3 GetScale();
 	void SetScale(XMFLOAT3 scal);
 
-	void Move(); //Move this entity
+	void Translate(); //Translate this entity
+	void Rotate(); //Rotate this entity
+	void Scale(); //Scale this entity
+	void Draw(ID3D11DeviceContext* deviceContext); //Draw this entity
 };

@@ -50,10 +50,14 @@ Game::~Game()
 	///Delete mesh objects
 	if (triangle)
 		delete triangle;
-	if (square)
-		delete square;
-	if (hexagon)
-		delete hexagon;
+	//if (square)
+	//	delete square;
+	//if (hexagon)
+	//	delete hexagon;
+
+	//Delete entities
+	if (!entities.empty())
+		entities.clear();
 }
 
 // --------------------------------------------------------
@@ -162,7 +166,11 @@ void Game::CreateBasicGeometry()
 	//Pass the vertices, indices, device, and other data into the mesh renderer
 	triangle = new Mesh(triangleVertices, sizeofArray(triangleVertices), triangleIndices, sizeofArray(triangleIndices), device);
 	
+	//Add entities to the vector of entities
+	for (int i = 0; i < 5; i++)
+		entities.push_back(Entity(triangle));
 
+	/*
 	///SQUARE
 	//Make vertices to pass into the mesh renderer
 	Vertex squareVertices[] =
@@ -198,6 +206,7 @@ void Game::CreateBasicGeometry()
 
 	//Pass the vertices, indices, device, and other data into the mesh renderer
 	hexagon = new Mesh(hexagonVertices, sizeofArray(hexagonVertices), hexagonIndices, sizeofArray(hexagonIndices), device);
+	*/
 }
 
 
@@ -268,49 +277,9 @@ void Game::Draw(float deltaTime, float totalTime)
 	vertexShader->SetShader();
 	pixelShader->SetShader();
 
-	//Set values for buffers
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-
-
-	//TRIANGLE
-	//Set the buffer for the current object
-	context->IASetVertexBuffers(0, 1, triangle->GetVertexBuffer(), &stride, &offset);
-	context->IASetIndexBuffer(triangle->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-
-	//Draw the object, passing in the number of vertices
-	//DrawIndexed() uses the currently set index buffer to look up corresponding vertices in the currently set VERTEX BUFFER
-	context->DrawIndexed(
-		triangle->GetIndexCount(),     //The number of indices to use (we could draw a subset if we wanted)
-		0,     //Offset to the first index we want to use
-		0);    //Offset to add to each index when looking up vertices
-
-
-	//SQUARE
-	//Set the buffer for the current object
-	context->IASetVertexBuffers(0, 1, square->GetVertexBuffer(), &stride, &offset);
-	context->IASetIndexBuffer(square->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-
-	//Draw the object, passing in the number of vertices
-	//DrawIndexed() uses the currently set index buffer to look up corresponding vertices in the currently set VERTEX BUFFER
-	context->DrawIndexed(
-		square->GetIndexCount(),     //The number of indices to use (we could draw a subset if we wanted)
-		0,     //Offset to the first index we want to use
-		0);    //Offset to add to each index when looking up vertices // Offset to add to each index when looking up vertices
-
-
-	//HEXAGON
-	//Set the buffer for the current object
-	context->IASetVertexBuffers(0, 1, hexagon->GetVertexBuffer(), &stride, &offset);
-	context->IASetIndexBuffer(hexagon->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-
-	//Draw the object, passing in the number of vertices
-	//DrawIndexed() uses the currently set index buffer to look up corresponding vertices in the currently set VERTEX BUFFER
-	context->DrawIndexed(
-		hexagon->GetIndexCount(),     //The number of indices to use (we could draw a subset if we wanted)
-		0,     //Offset to the first index we want to use
-		0);    //Offset to add to each index when looking up vertices
-
+	//Draw entities
+	for (int i = 0; i < 5; i++)
+		entities[i].Draw(context);
 
 	//Show the back buffer to the user
 	//Do this exactly once, at the end of the frame

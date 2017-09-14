@@ -4,11 +4,10 @@
 #include "DXCore.h"
 #include "SimpleShader.h"
 #include "Mesh.h" //Mesh renderer
+#include "Entity.h" //Entities
+#include "Macro.h" //Macros
 
-///Macro to get the size of an array
-///Not safe if a pointer is passed in, but hopefully nobody does that
-///Macro syntax from https://stackoverflow.com/questions/4415524/common-array-length-macro-for-c
-#define sizeofArray(x) (sizeof(x) / sizeof(*x))
+using std::vector;
 
 class Game : public DXCore
 {
@@ -48,8 +47,11 @@ private:
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
 
-	//Create mesh objects, initalize them to NULL because that creates fewer problems
+	//Initialize mesh objects to NULL to minimize problems later
 	Mesh* triangle = NULL;
-	Mesh* square = NULL;
-	Mesh* hexagon = NULL;
+	//Mesh* square = NULL;
+	//Mesh* hexagon = NULL;
+
+	//Initialize entities
+	vector<Entity> entities;
 };
