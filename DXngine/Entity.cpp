@@ -8,7 +8,7 @@ Entity::Entity(Mesh* objectMesh) //Constructor
 	XMStoreFloat4x4(&worldMatrix, XMMatrixIdentity()); //Store the identity matrix in the world matrix
 	position = XMFLOAT3(0, 0, 0);
 	rotation = XMFLOAT3(0, 0, 0);
-	scale = XMFLOAT3(0, 0, 0);
+	scale = XMFLOAT3(1, 1, 1);
 	entityMesh = objectMesh;
 }
 
@@ -57,16 +57,36 @@ void Entity::SetScale(XMFLOAT3 scal) //Set the scale of this entity
 	scale = scal;
 }
 
-void Entity::Translate() //Move this entity
+void Entity::ModifyPosition(XMFLOAT3 pos) //Move this entity
 {
+	position.x += pos.x;
+	position.y += pos.y;
+	position.z += pos.z;
 }
 
-void Entity::Rotate() //Rotate this entity
+void Entity::ModifyRotation(XMFLOAT3 rot) //Rotate this entity
 {
+	rotation.x += rot.x;
+	rotation.y += rot.y;
+	rotation.z += rot.z;
 }
 
-void Entity::Scale() //Scale this entity
+void Entity::ModifyScale(XMFLOAT3 scal) //Scale this entity
 {
+	scale.x += scal.x;
+	scale.y += scal.y;
+	scale.z += scal.z;
+}
+
+void Entity::UpdateWorldMatrix() //Update the world matrix
+{
+	XMMATRIX updateTranslation = XMMatrixTranslation(position.x, position.y, position.z); //Calculate translation
+	XMMATRIX updateRotation = XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z); //Calculate rotation
+	XMMATRIX updateScaling = XMMatrixScaling(scale.x, scale.y, scale.z); //Calculate scale
+
+	XMMATRIX updateWorld = updateScaling * updateRotation * updateTranslation; //Combine the transformation matrices
+
+	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(updateWorld)); //Transpose and store the updated matrix
 }
 
 void Entity::Draw(ID3D11DeviceContext* deviceContext) //Draw this entity

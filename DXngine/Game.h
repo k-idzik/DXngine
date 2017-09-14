@@ -49,8 +49,8 @@ private:
 
 	//Initialize mesh objects to NULL to minimize problems later
 	Mesh* triangle = NULL;
-	//Mesh* square = NULL;
-	//Mesh* hexagon = NULL;
+	Mesh* square = NULL;
+	Mesh* hexagon = NULL;
 
 	//Initialize entities
 	vector<Entity> entities;
