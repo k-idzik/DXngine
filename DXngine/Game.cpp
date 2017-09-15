@@ -54,6 +54,10 @@ Game::~Game()
 		delete square;
 	if (hexagon)
 		delete hexagon;
+
+	//Delete entities
+	if (!entities.empty())
+		entities.clear();
 }
 
 // --------------------------------------------------------
@@ -149,11 +153,12 @@ void Game::CreateBasicGeometry()
 
 	///TRIANGLE
 	//Make vertices to pass into the mesh renderer
+	//When creating meshes, start them at the origin
 	Vertex triangleVertices[] =
 	{
-		{ XMFLOAT3(-2.5f, +0.5f, +0.0f), red },
-		{ XMFLOAT3(-2.0f, -0.5f, +0.0f), green },
-		{ XMFLOAT3(-3.0f, -0.5f, +0.0f), blue },
+		{ XMFLOAT3(+0.0f, +0.5f, +0.0f), red },
+		{ XMFLOAT3(+0.5f, -0.5f, +0.0f), green },
+		{ XMFLOAT3(-0.5f, -0.5f, +0.0f), blue },
 	};
 
 	//Order the vertices by their index number and pass them into the array
@@ -161,10 +166,11 @@ void Game::CreateBasicGeometry()
 
 	//Pass the vertices, indices, device, and other data into the mesh renderer
 	triangle = new Mesh(triangleVertices, sizeofArray(triangleVertices), triangleIndices, sizeofArray(triangleIndices), device);
-	
 
+	
 	///SQUARE
 	//Make vertices to pass into the mesh renderer
+	//When creating meshes, start them at the origin
 	Vertex squareVertices[] =
 	{
 		{ XMFLOAT3(-0.5f, +0.5f, +0.0f), red },
@@ -182,15 +188,16 @@ void Game::CreateBasicGeometry()
 
 	///HEXAGON
 	//Make vertices to pass into the mesh renderer
+	//When creating meshes, start them at the origin
 	Vertex hexagonVertices[] =
 	{
-		{ XMFLOAT3(+2.0f, +0.0f, +0.0f), yellow },
-		{ XMFLOAT3(+2.0f, +0.5f, +0.0f), red },
-		{ XMFLOAT3(+2.25f, +0.25f, +0.0f), green },
-		{ XMFLOAT3(+2.25f, -0.25f, +0.0f), blue },
-		{ XMFLOAT3(+2.0f, -0.5f, +0.0f), red },
-		{ XMFLOAT3(+1.75f, -0.25f, +0.0f), green },
-		{ XMFLOAT3(+1.75f, +0.25f, +0.0f), blue },
+		{ XMFLOAT3(+0.0f, +0.0f, +0.0f), yellow },
+		{ XMFLOAT3(+0.0f, +0.5f, +0.0f), red },
+		{ XMFLOAT3(+0.5f, +0.25f, +0.0f), green },
+		{ XMFLOAT3(+0.5f, -0.25f, +0.0f), blue },
+		{ XMFLOAT3(+0.0f, -0.5f, +0.0f), red },
+		{ XMFLOAT3(-0.5f, -0.25f, +0.0f), green },
+		{ XMFLOAT3(-0.5f, +0.25f, +0.0f), blue },
 	};
 
 	//Order the vertices by their index number and pass them into the array
@@ -198,6 +205,26 @@ void Game::CreateBasicGeometry()
 
 	//Pass the vertices, indices, device, and other data into the mesh renderer
 	hexagon = new Mesh(hexagonVertices, sizeofArray(hexagonVertices), hexagonIndices, sizeofArray(hexagonIndices), device);
+	
+	//Add entities to the vector of entities
+	entities.push_back(Entity(triangle));
+	entities.push_back(Entity(triangle));
+	entities.push_back(Entity(square));
+	entities.push_back(Entity(square));
+	entities.push_back(Entity(square));
+	entities.push_back(Entity(hexagon));
+	entities.push_back(Entity(hexagon));
+	entities.push_back(Entity(hexagon));
+
+	//Move the triangle to it's new location
+	entities[0].ModifyPosition(XMFLOAT3(-2.5f, 0, 0));
+	entities[1].ModifyPosition(XMFLOAT3(2, 1, 0));
+	entities[2].ModifyPosition(XMFLOAT3(-1, -1, 0));
+	entities[3].ModifyPosition(XMFLOAT3(-.5f, 1.5f, 0));
+	entities[4].ModifyPosition(XMFLOAT3(3, -1, 0));
+	entities[5].ModifyPosition(XMFLOAT3(0, 0, 0));
+	entities[6].ModifyPosition(XMFLOAT3(1.5f, -1.5f, 0));
+	entities[7].ModifyPosition(XMFLOAT3(-2.25, -1.5f, 0));
 }
 
 
@@ -227,7 +254,25 @@ void Game::Update(float deltaTime, float totalTime)
 	// Quit if the escape key is pressed
 	if (GetAsyncKeyState(VK_ESCAPE))
 		Quit();
-}
+
+	//Update entity transformations
+	entities[0].ModifyRotation(XMFLOAT3(0, 0, .5f * deltaTime));
+	entities[1].ModifyPosition(XMFLOAT3(0, .001f, 0));
+	entities[2].ModifyPosition(XMFLOAT3(0, 0, deltaTime));
+	if (entities[3].GetScale().x > .01f)
+		entities[3].ModifyScale(XMFLOAT3(-deltaTime, 0, 0));
+	else if (entities[3].GetScale().x <= .01f)
+		entities[3].ModifyScale(XMFLOAT3(0, -deltaTime, 0));
+	if (entities[3].GetScale().y < .01f)
+		entities[3].SetScale(XMFLOAT3(1, 1, 1));
+	entities[4].ModifyRotation(XMFLOAT3(-deltaTime, deltaTime, 0));
+	entities[5].ModifyScale(XMFLOAT3(deltaTime, deltaTime, 0));
+	if (entities[5].GetScale().x > 1.5f)
+		entities[5].SetScale(XMFLOAT3(1, 1, 1));
+	entities[5].ModifyRotation(XMFLOAT3(0, 0, deltaTime));
+	entities[6].ModifyRotation(XMFLOAT3(.25f * deltaTime, .75f * deltaTime, .5f * deltaTime));
+	entities[7].ModifyPosition(XMFLOAT3(0, 0, -deltaTime / 2));
+}	
 
 // --------------------------------------------------------
 // Clear the screen, redraw everything, present to the user
@@ -247,70 +292,36 @@ void Game::Draw(float deltaTime, float totalTime)
 		1.0f,
 		0);
 
-	// Send data to shader variables
-	//  - Do this ONCE PER OBJECT you're drawing
-	//  - This is actually a complex process of copying data to a local buffer
-	//    and then copying that entire buffer to the GPU.  
-	//  - The "SimpleShader" class handles all of that for you.
-	vertexShader->SetMatrix4x4("world", worldMatrix);
-	vertexShader->SetMatrix4x4("view", viewMatrix);
-	vertexShader->SetMatrix4x4("projection", projectionMatrix);
+	//Draw entities
+	for (int i = 0; i < entities.size(); i++)
+	{
+		//Update the world matrix
+		entities[i].UpdateWorldMatrix();
 
-	// Once you've set all of the data you care to change for
-	// the next draw call, you need to actually send it to the GPU
-	//  - If you skip this, the "SetMatrix" calls above won't make it to the GPU!
-	vertexShader->CopyAllBufferData();
+		// Send data to shader variables
+		//  - Do this ONCE PER OBJECT you're drawing
+		//  - This is actually a complex process of copying data to a local buffer
+		//    and then copying that entire buffer to the GPU.  
+		//  - The "SimpleShader" class handles all of that for you.
+		vertexShader->SetMatrix4x4("world", entities[i].GetWorldMatrix());
+		vertexShader->SetMatrix4x4("view", viewMatrix);
+		vertexShader->SetMatrix4x4("projection", projectionMatrix);
 
-	// Set the vertex and pixel shaders to use for the next Draw() command
-	//  - These don't technically need to be set every frame...YET
-	//  - Once you start applying different shaders to different objects,
-	//    you'll need to swap the current shaders before each draw
-	vertexShader->SetShader();
-	pixelShader->SetShader();
+		// Once you've set all of the data you care to change for
+		// the next draw call, you need to actually send it to the GPU
+		//  - If you skip this, the "SetMatrix" calls above won't make it to the GPU!
+		vertexShader->CopyAllBufferData();
 
-	//Set values for buffers
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
+		// Set the vertex and pixel shaders to use for the next Draw() command
+		//  - These don't technically need to be set every frame...YET
+		//  - Once you start applying different shaders to different objects,
+		//    you'll need to swap the current shaders before each draw
+		vertexShader->SetShader();
+		pixelShader->SetShader();
 
-
-	//TRIANGLE
-	//Set the buffer for the current object
-	context->IASetVertexBuffers(0, 1, triangle->GetVertexBuffer(), &stride, &offset);
-	context->IASetIndexBuffer(triangle->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-
-	//Draw the object, passing in the number of vertices
-	//DrawIndexed() uses the currently set index buffer to look up corresponding vertices in the currently set VERTEX BUFFER
-	context->DrawIndexed(
-		triangle->GetIndexCount(),     //The number of indices to use (we could draw a subset if we wanted)
-		0,     //Offset to the first index we want to use
-		0);    //Offset to add to each index when looking up vertices
-
-
-	//SQUARE
-	//Set the buffer for the current object
-	context->IASetVertexBuffers(0, 1, square->GetVertexBuffer(), &stride, &offset);
-	context->IASetIndexBuffer(square->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-
-	//Draw the object, passing in the number of vertices
-	//DrawIndexed() uses the currently set index buffer to look up corresponding vertices in the currently set VERTEX BUFFER
-	context->DrawIndexed(
-		square->GetIndexCount(),     //The number of indices to use (we could draw a subset if we wanted)
-		0,     //Offset to the first index we want to use
-		0);    //Offset to add to each index when looking up vertices // Offset to add to each index when looking up vertices
-
-
-	//HEXAGON
-	//Set the buffer for the current object
-	context->IASetVertexBuffers(0, 1, hexagon->GetVertexBuffer(), &stride, &offset);
-	context->IASetIndexBuffer(hexagon->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
-
-	//Draw the object, passing in the number of vertices
-	//DrawIndexed() uses the currently set index buffer to look up corresponding vertices in the currently set VERTEX BUFFER
-	context->DrawIndexed(
-		hexagon->GetIndexCount(),     //The number of indices to use (we could draw a subset if we wanted)
-		0,     //Offset to the first index we want to use
-		0);    //Offset to add to each index when looking up vertices
-
+		//Draw the entities
+		entities[i].Draw(context);
+	}
 
 	//Show the back buffer to the user
 	//Do this exactly once, at the end of the frame

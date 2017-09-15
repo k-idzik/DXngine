@@ -1,5 +1,5 @@
+///Kevin Idzik
 ///Mesh renderer
-
 #pragma once
 
 #include <d3d11.h>

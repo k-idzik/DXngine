@@ -1,5 +1,5 @@
+///Kevin Idzik
 ///Mesh renderer
-
 #include "Mesh.h"
 
 ///Constructor
