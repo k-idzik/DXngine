@@ -1,3 +1,11 @@
-﻿  Game.cpp
-  DX11Starter.vcxproj -> Z:\IGMProfile\Desktop\GitHub\DXngine\x64\Debug\DXngine.exe
-  DX11Starter.vcxproj -> Z:\IGMProfile\Desktop\GitHub\DXngine\x64\Debug\DXngine.pdb (Partial PDB)
+﻿  compilation object save succeeded; see C:\Users\Kevin Idzik\Documents\Files\Important Files\College\4th Year\IGME-540\DXngine\x64\Debug\PixelShader.cso
+  compilation object save succeeded; see C:\Users\Kevin Idzik\Documents\Files\Important Files\College\4th Year\IGME-540\DXngine\x64\Debug\VertexShader.cso
+  SimpleShader.cpp
+  Mesh.cpp
+  Main.cpp
+  Game.cpp
+  Entity.cpp
+  DXCore.cpp
+  Generating Code...
+  DX11Starter.vcxproj -> C:\Users\Kevin Idzik\Documents\Files\Important Files\College\4th Year\IGME-540\DXngine\x64\Debug\DXngine.exe
+  DX11Starter.vcxproj -> C:\Users\Kevin Idzik\Documents\Files\Important Files\College\4th Year\IGME-540\DXngine\x64\Debug\DXngine.pdb (Partial PDB)
