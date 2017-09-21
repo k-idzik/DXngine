@@ -1,6 +1,8 @@
 ///Kevin Idzik
 ///First person camera
 #include "Camera.h"
+#include <iostream>
+using namespace std;
 
 Camera::Camera() //Constructor
 {
@@ -31,7 +33,7 @@ void Camera::Update() //Updates the camera's view matrix
 	XMVector3Rotate(XMLoadFloat3(&forward), updatedRotation);
 
 	XMFLOAT3 up = XMFLOAT3(0, 1, 0);
-	XMMatrixLookToLH(XMLoadFloat3(&position), updatedRotation, XMLoadFloat3(&up));
+	XMMatrixLookToLH(XMLoadFloat3(&position), XMLoadFloat3(&forward), XMLoadFloat3(&up));
 }
 
 void Camera::InputHandler() //Handles camera input
@@ -65,5 +67,6 @@ void Camera::InputHandler() //Handles camera input
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000) //Move up
 	{
 		position.y += .05f;
+		cout << position.y << endl;
 	}
 }
