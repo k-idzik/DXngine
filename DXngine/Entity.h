@@ -5,8 +5,7 @@
 #include <DirectXMath.h> //DXMath library
 #include "Mesh.h"
 
-//Less unnecessary repetition, Windows.h could be included instead
-using namespace DirectX;
+using namespace DirectX; //Less unnecessary repetition
 
 class Entity
 {

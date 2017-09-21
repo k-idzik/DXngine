@@ -255,6 +255,10 @@ void Game::Update(float deltaTime, float totalTime)
 	if (GetAsyncKeyState(VK_ESCAPE))
 		Quit();
 
+	//Camera
+	gameCamera->InputHandler(); //Get input
+	gameCamera->Update(); //Update the camera
+
 	//Update entity transformations
 	entities[0].ModifyRotation(XMFLOAT3(0, 0, .5f * deltaTime));
 	entities[1].ModifyPosition(XMFLOAT3(0, .001f, 0));

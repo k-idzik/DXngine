@@ -80,13 +80,13 @@ void Entity::ModifyScale(XMFLOAT3 scal) //Scale this entity
 
 void Entity::UpdateWorldMatrix() //Update the world matrix
 {
-	XMMATRIX updateTranslation = XMMatrixTranslation(position.x, position.y, position.z); //Calculate translation
-	XMMATRIX updateRotation = XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z); //Calculate rotation
-	XMMATRIX updateScaling = XMMatrixScaling(scale.x, scale.y, scale.z); //Calculate scale
+	XMMATRIX updatedTranslation = XMMatrixTranslation(position.x, position.y, position.z); //Calculate translation
+	XMMATRIX updatedRotation = XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z); //Calculate rotation
+	XMMATRIX updatedScaling = XMMatrixScaling(scale.x, scale.y, scale.z); //Calculate scale
 
-	XMMATRIX updateWorld = updateScaling * updateRotation * updateTranslation; //Combine the transformation matrices
+	XMMATRIX updatedWorld = updatedScaling * updatedRotation * updatedTranslation; //Combine the transformation matrices
 
-	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(updateWorld)); //Transpose and store the updated matrix
+	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(updatedWorld)); //Transpose and store the updated matrix
 }
 
 void Entity::Draw(ID3D11DeviceContext* deviceContext) //Draw this entity
