@@ -101,8 +101,8 @@ void Camera::UpdateProjectionMatrix(unsigned int width, unsigned int height) //U
 void Camera::MouseInput(float xAxis, float yAxis) //Handles mouse input
 {
 	//Scale the rotations in terms of radians
-	float xRadianized = -xAxis / 100;
-	float yRadianized = -yAxis / 100;
+	float xRadianized = -xAxis / 200;
+	float yRadianized = -yAxis / 200;
 
 	rotation.x += yRadianized * rotationSpeed; //Rotate around the Y axis
 	rotation.y += xRadianized * rotationSpeed; //Rotate around the X axis
