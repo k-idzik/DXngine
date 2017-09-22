@@ -44,8 +44,8 @@ Game::~Game()
 
 	// Delete our simple shader objects, which
 	// will clean up their own internal DirectX stuff
-	delete vertexShader;
-	delete pixelShader;
+	//delete vertexShader;
+	//delete pixelShader;
 
 	///Delete mesh objects
 	if (triangle)
@@ -54,6 +54,10 @@ Game::~Game()
 		delete square;
 	if (hexagon)
 		delete hexagon;
+
+	//Delete material
+	if (matl)
+		delete matl;
 
 	//Delete entities
 	if (!entities.empty())
@@ -71,6 +75,10 @@ void Game::Init()
 	//  - You'll be expanding and/or replacing these later
 	LoadShaders();
 	CreateMatrices();
+
+	//Initialize the material
+	matl = new Material(vertexShader, pixelShader);
+
 	CreateBasicGeometry();
 
 	// Tell the input assembler stage of the pipeline what kind of
@@ -126,16 +134,6 @@ void Game::CreateMatrices()
 		dir,     // Direction the camera is looking
 		up);     // "Up" direction in 3D space (prevents roll)
 	XMStoreFloat4x4(&viewMatrix, XMMatrixTranspose(V)); // Transpose for HLSL!
-
-	// Create the Projection matrix
-	// - This should match the window's aspect ratio, and also update anytime
-	//    the window resizes (which is already happening in OnResize() below)
-	XMMATRIX P = XMMatrixPerspectiveFovLH(
-		0.25f * 3.1415926535f,		// Field of View Angle
-		(float)width / height,		// Aspect ratio
-		0.1f,						// Near clip plane distance
-		100.0f);					// Far clip plane distance
-	XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P)); // Transpose for HLSL!
 }
 
 
@@ -207,14 +205,14 @@ void Game::CreateBasicGeometry()
 	hexagon = new Mesh(hexagonVertices, sizeofArray(hexagonVertices), hexagonIndices, sizeofArray(hexagonIndices), device);
 	
 	//Add entities to the vector of entities
-	entities.push_back(Entity(triangle));
-	entities.push_back(Entity(triangle));
-	entities.push_back(Entity(square));
-	entities.push_back(Entity(square));
-	entities.push_back(Entity(square));
-	entities.push_back(Entity(hexagon));
-	entities.push_back(Entity(hexagon));
-	entities.push_back(Entity(hexagon));
+	entities.push_back(Entity(triangle, matl));
+	entities.push_back(Entity(triangle, matl));
+	entities.push_back(Entity(square, matl));
+	entities.push_back(Entity(square, matl));
+	entities.push_back(Entity(square, matl));
+	entities.push_back(Entity(hexagon, matl));
+	entities.push_back(Entity(hexagon, matl));
+	entities.push_back(Entity(hexagon, matl));
 
 	//Move the triangle to it's new location
 	entities[0].ModifyPosition(XMFLOAT3(-2.5f, 0, 0));
@@ -227,23 +225,17 @@ void Game::CreateBasicGeometry()
 	entities[7].ModifyPosition(XMFLOAT3(-2.25, -1.5f, 0));
 }
 
-
 // --------------------------------------------------------
 // Handle resizing DirectX "stuff" to match the new window size.
 // For instance, updating our projection matrix's aspect ratio.
 // --------------------------------------------------------
 void Game::OnResize()
 {
-	// Handle base-level DX resize stuff
+	//Handle base-level DX resize stuff
 	DXCore::OnResize();
 
-	// Update our projection matrix since the window size changed
-	XMMATRIX P = XMMatrixPerspectiveFovLH(
-		0.25f * 3.1415926535f,	// Field of View Angle
-		(float)width / height,	// Aspect ratio
-		0.1f,				  	// Near clip plane distance
-		100.0f);			  	// Far clip plane distance
-	XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P)); // Transpose for HLSL!
+	//Update our projection matrix since the window size changed
+	gameCamera.UpdateProjectionMatrix(width, height);
 }
 
 // --------------------------------------------------------
@@ -301,29 +293,8 @@ void Game::Draw(float deltaTime, float totalTime)
 		//Update the world matrix
 		entities[i].UpdateWorldMatrix();
 
-		// Send data to shader variables
-		//  - Do this ONCE PER OBJECT you're drawing
-		//  - This is actually a complex process of copying data to a local buffer
-		//    and then copying that entire buffer to the GPU.  
-		//  - The "SimpleShader" class handles all of that for you.
-		vertexShader->SetMatrix4x4("world", entities[i].GetWorldMatrix());
-		vertexShader->SetMatrix4x4("view", gameCamera.GetViewMatrix());
-		vertexShader->SetMatrix4x4("projection", projectionMatrix);
-
-		// Once you've set all of the data you care to change for
-		// the next draw call, you need to actually send it to the GPU
-		//  - If you skip this, the "SetMatrix" calls above won't make it to the GPU!
-		vertexShader->CopyAllBufferData();
-
-		// Set the vertex and pixel shaders to use for the next Draw() command
-		//  - These don't technically need to be set every frame...YET
-		//  - Once you start applying different shaders to different objects,
-		//    you'll need to swap the current shaders before each draw
-		vertexShader->SetShader();
-		pixelShader->SetShader();
-
-		//Draw the entities
-		entities[i].Draw(context);
+		//Draw the entities (also prepares materials)
+		entities[i].Draw(context, gameCamera.GetViewMatrix(), gameCamera.GetProjectionMatrix());
 	}
 
 	//Show the back buffer to the user
@@ -372,11 +343,19 @@ void Game::OnMouseUp(WPARAM buttonState, int x, int y)
 // --------------------------------------------------------
 void Game::OnMouseMove(WPARAM buttonState, int x, int y)
 {
-	// Add any custom code here...
+	//When the left mouse button is held down
+	if (buttonState && 0x0001)
+	{
+		//Move the camera with the mouse
+		float nextX = x - (float)prevMousePos.x;
+		float nextY = y - (float)prevMousePos.y;
 
-	// Save the previous mouse position, so we have it for the future
-	prevMousePos.x = x;
-	prevMousePos.y = y;
+		gameCamera.MouseInput(nextX, nextY);
+
+		// Save the previous mouse position, so we have it for the future
+		prevMousePos.x = x;
+		prevMousePos.y = y;
+	}
 }
 
 // --------------------------------------------------------

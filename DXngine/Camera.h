@@ -23,14 +23,19 @@ private:
 	float movementSpeed; //The camera's movement speed
 	float rotationSpeed; //The camera's rotation speed
 
+	void KeyboardInput(float deltaTime); //Handles keyboard input
+	void UpdateViewMatrix(); //Updates the view matrix
+
 public:
-	Camera(); //Constructor
+	Camera(unsigned int width, unsigned int height); //Constructor
 	~Camera(); //Destructor
 
-	//Accessors
+	//Accessors and mutators
 	XMFLOAT4X4 GetViewMatrix();
 	XMFLOAT4X4 GetProjectionMatrix();
+	void SetRotation(XMFLOAT3 rot);
 
 	void Update(float deltaTime); //Updates the camera's view matrix
-	void InputHandler(float deltaTime); //Handles camera input
+	void UpdateProjectionMatrix(unsigned int width, unsigned int height); //Updates the projection matrix
+	void MouseInput(float xAxis, float yAxis); //Handles mouse input
 };

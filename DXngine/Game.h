@@ -54,9 +54,12 @@ private:
 	Mesh* square = NULL;
 	Mesh* hexagon = NULL;
 
+	//Initialize materials
+	Material* matl = NULL;
+
 	//Initialize entities
 	vector<Entity> entities;
 
 	//Initialize the camera
-	Camera gameCamera = Camera();
+	Camera gameCamera = Camera(width, height);
 };
