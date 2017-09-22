@@ -2,7 +2,7 @@
 ///Entities
 #include "Entity.h"
 
-Entity::Entity(Mesh* objectMesh) //Constructor
+Entity::Entity(Mesh* objectMesh, Material* objectMaterial) //Constructor
 {
 	//Initialize variables
 	XMStoreFloat4x4(&worldMatrix, XMMatrixIdentity()); //Store the identity matrix in the world matrix
@@ -10,11 +10,11 @@ Entity::Entity(Mesh* objectMesh) //Constructor
 	rotation = XMFLOAT3(0, 0, 0);
 	scale = XMFLOAT3(1, 1, 1);
 	entityMesh = objectMesh;
+	entityMaterial = objectMaterial;
 }
 
 Entity::~Entity() //Destructor
 {
-
 }
 
 XMFLOAT4X4 Entity::GetWorldMatrix() //Get the world matrix of this entity
@@ -80,17 +80,44 @@ void Entity::ModifyScale(XMFLOAT3 scal) //Scale this entity
 
 void Entity::UpdateWorldMatrix() //Update the world matrix
 {
-	XMMATRIX updateTranslation = XMMatrixTranslation(position.x, position.y, position.z); //Calculate translation
-	XMMATRIX updateRotation = XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z); //Calculate rotation
-	XMMATRIX updateScaling = XMMatrixScaling(scale.x, scale.y, scale.z); //Calculate scale
+	XMMATRIX updatedTranslation = XMMatrixTranslation(position.x, position.y, position.z); //Calculate translation
+	XMMATRIX updatedRotation = XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z); //Calculate rotation
+	XMMATRIX updatedScaling = XMMatrixScaling(scale.x, scale.y, scale.z); //Calculate scale
 
-	XMMATRIX updateWorld = updateScaling * updateRotation * updateTranslation; //Combine the transformation matrices
+	XMMATRIX updatedWorld = updatedScaling * updatedRotation * updatedTranslation; //Combine the transformation matrices
 
-	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(updateWorld)); //Transpose and store the updated matrix
+	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(updatedWorld)); //Transpose and store the updated matrix
 }
 
-void Entity::Draw(ID3D11DeviceContext* deviceContext) //Draw this entity
+void Entity::PrepareMaterial(XMFLOAT4X4 viewMat, XMFLOAT4X4 projectionMat) //Prepare the material for this object
 {
+	//Send data to shader variables
+	//Do this ONCE PER OBJECT you're drawing
+	//This is actually a complex process of copying data to a local buffer
+	//and then copying that entire buffer to the GPU.  
+	//The "SimpleShader" class handles all of that for you.
+	entityMaterial->GetVertexShader()->SetMatrix4x4("world", worldMatrix);
+	entityMaterial->GetVertexShader()->SetMatrix4x4("view", viewMat);
+	entityMaterial->GetVertexShader()->SetMatrix4x4("projection", projectionMat);
+
+	//Once you've set all of the data you care to change for
+	//the next draw call, you need to actually send it to the GPU
+	//If you skip this, the "SetMatrix" calls above won't make it to the GPU!
+	entityMaterial->GetVertexShader()->CopyAllBufferData();
+
+	//Set the vertex and pixel shaders to use for the next Draw() command
+	//These don't technically need to be set every frame...YET
+	//Once you start applying different shaders to different objects,
+	//you'll need to swap the current shaders before each draw
+	entityMaterial->GetVertexShader()->SetShader();
+	entityMaterial->GetPixelShader()->SetShader();
+}
+
+void Entity::Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4 viewMat, XMFLOAT4X4 projectionMat) //Draw this entity
+{
+	//Prepare the materials
+	PrepareMaterial(viewMat, projectionMat);
+
 	//Set values for buffers
 	UINT stride = sizeof(Vertex);
 	UINT offset = 0;

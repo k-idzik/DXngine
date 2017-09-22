@@ -4,9 +4,9 @@
 
 #include <DirectXMath.h> //DXMath library
 #include "Mesh.h"
+#include "Material.h"
 
-//Less unnecessary repetition, Windows.h could be included instead
-using namespace DirectX;
+using namespace DirectX; //Less unnecessary repetition
 
 class Entity
 {
@@ -16,9 +16,12 @@ private:
 	XMFLOAT3 rotation;
 	XMFLOAT3 scale;
 	Mesh* entityMesh;
+	Material* entityMaterial;
+
+	void PrepareMaterial(XMFLOAT4X4 viewMat, XMFLOAT4X4 projectionMat); //Prepare the material for this object
 
 public:
-	Entity(Mesh* objectMesh); //Constructor
+	Entity(Mesh* objectMesh, Material* objectMaterial); //Constructor
 	~Entity(); //Destructor
 
 	//Accessors and mutators
@@ -35,5 +38,5 @@ public:
 	void ModifyRotation(XMFLOAT3 rot); //Rotate this entity
 	void ModifyScale(XMFLOAT3 scal); //Scale this entity
 	void UpdateWorldMatrix(); //Update the world matrix
-	void Draw(ID3D11DeviceContext* deviceContext); //Draw this entity
+	void Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4 viewMat, XMFLOAT4X4 projectionMat); //Draw this entity
 };

@@ -5,6 +5,8 @@
 #include "SimpleShader.h"
 #include "Mesh.h" //Mesh renderer
 #include "Entity.h" //Entities
+#include "Camera.h" //Camera
+#include "Material.h" //Materials
 #include "Macro.h" //Macros
 
 using std::vector;
@@ -52,6 +54,12 @@ private:
 	Mesh* square = NULL;
 	Mesh* hexagon = NULL;
 
+	//Initialize materials
+	Material* matl = NULL;
+
 	//Initialize entities
 	vector<Entity> entities;
+
+	//Initialize the camera
+	Camera gameCamera = Camera(width, height);
 };
