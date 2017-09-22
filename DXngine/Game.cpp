@@ -256,8 +256,7 @@ void Game::Update(float deltaTime, float totalTime)
 		Quit();
 
 	//Camera
-	gameCamera->InputHandler(); //Get input
-	gameCamera->Update(); //Update the camera
+	gameCamera.Update(deltaTime); //Update the camera
 
 	//Update entity transformations
 	entities[0].ModifyRotation(XMFLOAT3(0, 0, .5f * deltaTime));
@@ -308,7 +307,7 @@ void Game::Draw(float deltaTime, float totalTime)
 		//    and then copying that entire buffer to the GPU.  
 		//  - The "SimpleShader" class handles all of that for you.
 		vertexShader->SetMatrix4x4("world", entities[i].GetWorldMatrix());
-		vertexShader->SetMatrix4x4("view", viewMatrix);
+		vertexShader->SetMatrix4x4("view", gameCamera.GetViewMatrix());
 		vertexShader->SetMatrix4x4("projection", projectionMatrix);
 
 		// Once you've set all of the data you care to change for

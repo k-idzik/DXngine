@@ -58,5 +58,5 @@ private:
 	vector<Entity> entities;
 
 	//Initialize the camera
-	Camera* gameCamera = new Camera();
+	Camera gameCamera = Camera();
 };
