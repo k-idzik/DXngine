@@ -47,13 +47,13 @@ Game::~Game()
 	*/
 
 	//Delete mesh objects
-	if (!models.empty())
+	if (!meshes.empty())
 	{
 		//Loop to make sure each model is deleted
-		for each (Mesh* model in models)
+		for each (Mesh* model in meshes)
 			delete model;
 
-		models.clear();
+		meshes.clear();
 	}
 
 	//Delete materials
@@ -82,6 +82,14 @@ void Game::Init()
 	//  - You'll be expanding and/or replacing these later
 	LoadShaders();
 	CreateMatrices();
+
+	//Initialize the models (Visual Studio)
+	meshes.push_back(new Mesh("../../Assets/Models/cone.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/cube.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/cylinder.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/helix.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/sphere.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/torus.obj", device));
 
 	//Initialize the material
 	materials.push_back(new Material(vertexShader, pixelShader));
@@ -229,6 +237,22 @@ void Game::CreateBasicGeometry()
 	entities[6].ModifyPosition(XMFLOAT3(1.5f, -1.5f, 0));
 	entities[7].ModifyPosition(XMFLOAT3(-2.25, -1.5f, 0));
 	*/
+
+	//Add entities to the entities vector
+	entities.push_back(Entity(meshes[0], materials[0]));
+	entities.push_back(Entity(meshes[1], materials[0]));
+	entities.push_back(Entity(meshes[2], materials[0]));
+	entities.push_back(Entity(meshes[3], materials[0]));
+	entities.push_back(Entity(meshes[4], materials[0]));
+	entities.push_back(Entity(meshes[5], materials[0]));
+
+	//Arrange the models
+	entities[0].ModifyPosition(XMFLOAT3(-2.5f, 0, 0));
+	entities[1].ModifyPosition(XMFLOAT3(2, 1, 0));
+	entities[2].ModifyPosition(XMFLOAT3(-1, -1, 0));
+	entities[3].ModifyPosition(XMFLOAT3(-.5f, 1.5f, 0));
+	entities[4].ModifyPosition(XMFLOAT3(3, -1, 0));
+	entities[5].ModifyPosition(XMFLOAT3(0, 0, 0));
 }
 
 // --------------------------------------------------------
@@ -256,7 +280,6 @@ void Game::Update(float deltaTime, float totalTime)
 	//Camera
 	gameCamera.Update(deltaTime); //Update the camera
 
-	/*
 	//Update entity transformations
 	entities[0].ModifyRotation(XMFLOAT3(0, 0, .5f * deltaTime));
 	entities[1].ModifyPosition(XMFLOAT3(0, .001f, 0));
@@ -272,9 +295,6 @@ void Game::Update(float deltaTime, float totalTime)
 	if (entities[5].GetScale().x > 1.5f)
 		entities[5].SetScale(XMFLOAT3(1, 1, 1));
 	entities[5].ModifyRotation(XMFLOAT3(0, 0, deltaTime));
-	entities[6].ModifyRotation(XMFLOAT3(.25f * deltaTime, .75f * deltaTime, .5f * deltaTime));
-	entities[7].ModifyPosition(XMFLOAT3(0, 0, -deltaTime / 2));
-	*/
 }
 
 // --------------------------------------------------------

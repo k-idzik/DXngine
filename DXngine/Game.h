@@ -36,7 +36,7 @@ private:
 	*/
 
 	//Initialize meshes
-	vector<Mesh*> models;
+	vector<Mesh*> meshes;
 
 	//Initialize materials
 	vector<Material*> materials;
