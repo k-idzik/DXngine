@@ -2,13 +2,15 @@
 ///Materials define the look of a mesh when it is drawn
 #include "Material.h"
 
-Material::Material(SimpleVertexShader* vertShader, SimplePixelShader* pixShader) //Constructor
+//Constructor
+Material::Material(SimpleVertexShader* vertShader, SimplePixelShader* pixShader)
 {
 	vertexShader = vertShader;
 	pixelShader = pixShader;
 }
 
-Material::~Material() //Destructor
+//Destructor
+Material::~Material()
 {
 	//Delete pointers
 	if (vertexShader)
@@ -17,12 +19,14 @@ Material::~Material() //Destructor
 		delete pixelShader;
 }
 
-SimpleVertexShader* Material::GetVertexShader() //Get the simple vertex shader
+//Get the simple vertex shader
+SimpleVertexShader* Material::GetVertexShader()
 {
 	return vertexShader;
 }
 
-SimplePixelShader* Material::GetPixelShader() //Get the pixel shader
+//Get the pixel shader
+SimplePixelShader* Material::GetPixelShader()
 {
 	return pixelShader;
 }

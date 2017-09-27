@@ -2,7 +2,8 @@
 ///Entities
 #include "Entity.h"
 
-Entity::Entity(Mesh* objectMesh, Material* objectMaterial) //Constructor
+//Constructor
+Entity::Entity(Mesh* objectMesh, Material* objectMaterial)
 {
 	//Initialize variables
 	XMStoreFloat4x4(&worldMatrix, XMMatrixIdentity()); //Store the identity matrix in the world matrix
@@ -13,72 +14,85 @@ Entity::Entity(Mesh* objectMesh, Material* objectMaterial) //Constructor
 	entityMaterial = objectMaterial;
 }
 
-Entity::~Entity() //Destructor
+//Destructor
+Entity::~Entity()
 {
 }
 
-XMFLOAT4X4 Entity::GetWorldMatrix() //Get the world matrix of this entity
+//Get the world matrix of this entity
+XMFLOAT4X4 Entity::GetWorldMatrix()
 {
 	return worldMatrix;
 }
 
-void Entity::SetWorldMatrix(XMFLOAT4X4 worldMat) //Set the world matrix of this entity
+//Set the world matrix of this entity
+void Entity::SetWorldMatrix(XMFLOAT4X4 worldMat)
 {
 	worldMatrix = worldMat;
 }
 
-XMFLOAT3 Entity::GetPosition() //Get the position of this entity
+//Get the position of this entity
+XMFLOAT3 Entity::GetPosition()
 {
 	return position;
 }
 
-void Entity::SetPosition(XMFLOAT3 pos) //Set the position of this entity
+//Set the position of this entity
+void Entity::SetPosition(XMFLOAT3 pos)
 {
 	position = pos;
 }
 
-XMFLOAT3 Entity::GetRotation() //Get the rotation of this entity
+//Get the rotation of this entity
+XMFLOAT3 Entity::GetRotation()
 {
 	return rotation;
 }
 
-void Entity::SetRotation(XMFLOAT3 rot) //Set the rotation of this entity
+//Set the rotation of this entity
+void Entity::SetRotation(XMFLOAT3 rot)
 {
 	rotation = rot;
 }
 
-XMFLOAT3 Entity::GetScale() //Get the scale of this entity
+//Get the scale of this entity
+XMFLOAT3 Entity::GetScale()
 {
 	return scale;
 }
 
-void Entity::SetScale(XMFLOAT3 scal) //Set the scale of this entity
+//Set the scale of this entity
+void Entity::SetScale(XMFLOAT3 scal)
 {
 	scale = scal;
 }
 
-void Entity::ModifyPosition(XMFLOAT3 pos) //Move this entity
+//Move this entity
+void Entity::ModifyPosition(XMFLOAT3 pos)
 {
 	position.x += pos.x;
 	position.y += pos.y;
 	position.z += pos.z;
 }
 
-void Entity::ModifyRotation(XMFLOAT3 rot) //Rotate this entity
+//Rotate this entity
+void Entity::ModifyRotation(XMFLOAT3 rot)
 {
 	rotation.x += rot.x;
 	rotation.y += rot.y;
 	rotation.z += rot.z;
 }
 
-void Entity::ModifyScale(XMFLOAT3 scal) //Scale this entity
+//Scale this entity
+void Entity::ModifyScale(XMFLOAT3 scal)
 {
 	scale.x += scal.x;
 	scale.y += scal.y;
 	scale.z += scal.z;
 }
 
-void Entity::UpdateWorldMatrix() //Update the world matrix
+//Update the world matrix
+void Entity::UpdateWorldMatrix()
 {
 	XMMATRIX updatedTranslation = XMMatrixTranslation(position.x, position.y, position.z); //Calculate translation
 	XMMATRIX updatedRotation = XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z); //Calculate rotation
@@ -89,7 +103,8 @@ void Entity::UpdateWorldMatrix() //Update the world matrix
 	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(updatedWorld)); //Transpose and store the updated matrix
 }
 
-void Entity::PrepareMaterial(XMFLOAT4X4 viewMat, XMFLOAT4X4 projectionMat) //Prepare the material for this object
+//Prepare the material for this object
+void Entity::PrepareMaterial(XMFLOAT4X4 viewMat, XMFLOAT4X4 projectionMat)
 {
 	//Send data to shader variables
 	//Do this ONCE PER OBJECT you're drawing
@@ -113,7 +128,8 @@ void Entity::PrepareMaterial(XMFLOAT4X4 viewMat, XMFLOAT4X4 projectionMat) //Pre
 	entityMaterial->GetPixelShader()->SetShader();
 }
 
-void Entity::Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4 viewMat, XMFLOAT4X4 projectionMat) //Draw this entity
+//Draw this entity
+void Entity::Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4 viewMat, XMFLOAT4X4 projectionMat)
 {
 	//Prepare the materials
 	PrepareMaterial(viewMat, projectionMat);

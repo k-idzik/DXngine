@@ -1,9 +1,6 @@
 #include "Game.h"
 #include "Vertex.h"
 
-// For the DirectX Math library
-using namespace DirectX;
-
 // --------------------------------------------------------
 // Constructor
 //
@@ -39,25 +36,35 @@ Game::Game(HINSTANCE hInstance)
 // --------------------------------------------------------
 Game::~Game()
 {
-	// Release any (and all!) DirectX objects
-	// we've made in the Game class
-
-	// Delete our simple shader objects, which
-	// will clean up their own internal DirectX stuff
-	//delete vertexShader;
-	//delete pixelShader;
-
-	///Delete mesh objects
+	/*
+	//Delete mesh objects
 	if (triangle)
 		delete triangle;
 	if (square)
 		delete square;
 	if (hexagon)
 		delete hexagon;
+	*/
 
-	//Delete material
-	if (matl)
-		delete matl;
+	//Delete mesh objects
+	if (!models.empty())
+	{
+		//Loop to make sure each model is deleted
+		for each (Mesh* model in models)
+			delete model;
+
+		models.clear();
+	}
+
+	//Delete materials
+	if (!materials.empty())
+	{
+		//Loop to make sure each material is deleted
+		for each (Material* matl in materials)
+			delete matl;
+
+		materials.clear();
+	}
 
 	//Delete entities
 	if (!entities.empty())
@@ -77,7 +84,7 @@ void Game::Init()
 	CreateMatrices();
 
 	//Initialize the material
-	matl = new Material(vertexShader, pixelShader);
+	materials.push_back(new Material(vertexShader, pixelShader));
 
 	CreateBasicGeometry();
 
@@ -142,11 +149,9 @@ void Game::CreateMatrices()
 // --------------------------------------------------------
 void Game::CreateBasicGeometry()
 {
-	//Create colors
-	XMFLOAT4 red = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	XMFLOAT4 green = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
-	XMFLOAT4 blue = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-	XMFLOAT4 yellow = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+	/*
+	XMFLOAT2 uvs = XMFLOAT2(0, 0); //UV coordinates
+	XMFLOAT3 normals = XMFLOAT3(0, 0, 0); //Normals
 
 
 	///TRIANGLE
@@ -154,9 +159,9 @@ void Game::CreateBasicGeometry()
 	//When creating meshes, start them at the origin
 	Vertex triangleVertices[] =
 	{
-		{ XMFLOAT3(+0.0f, +0.5f, +0.0f), red },
-		{ XMFLOAT3(+0.5f, -0.5f, +0.0f), green },
-		{ XMFLOAT3(-0.5f, -0.5f, +0.0f), blue },
+		{ XMFLOAT3(+0.0f, +0.5f, +0.0f), uvs, normals },
+		{ XMFLOAT3(+0.5f, -0.5f, +0.0f), uvs, normals },
+		{ XMFLOAT3(-0.5f, -0.5f, +0.0f), uvs, normals },
 	};
 
 	//Order the vertices by their index number and pass them into the array
@@ -171,10 +176,10 @@ void Game::CreateBasicGeometry()
 	//When creating meshes, start them at the origin
 	Vertex squareVertices[] =
 	{
-		{ XMFLOAT3(-0.5f, +0.5f, +0.0f), red },
-		{ XMFLOAT3(+0.5f, +0.5f, +0.0f), green },
-		{ XMFLOAT3(+0.5f, -0.5f, +0.0f), blue },
-		{ XMFLOAT3(-0.5f, -0.5f, +0.0f), yellow },
+		{ XMFLOAT3(-0.5f, +0.5f, +0.0f), uvs, normals },
+		{ XMFLOAT3(+0.5f, +0.5f, +0.0f), uvs, normals },
+		{ XMFLOAT3(+0.5f, -0.5f, +0.0f), uvs, normals },
+		{ XMFLOAT3(-0.5f, -0.5f, +0.0f), uvs, normals },
 	};
 
 	//Order the vertices by their index number and pass them into the array
@@ -189,13 +194,13 @@ void Game::CreateBasicGeometry()
 	//When creating meshes, start them at the origin
 	Vertex hexagonVertices[] =
 	{
-		{ XMFLOAT3(+0.0f, +0.0f, +0.0f), yellow },
-		{ XMFLOAT3(+0.0f, +0.5f, +0.0f), red },
-		{ XMFLOAT3(+0.5f, +0.25f, +0.0f), green },
-		{ XMFLOAT3(+0.5f, -0.25f, +0.0f), blue },
-		{ XMFLOAT3(+0.0f, -0.5f, +0.0f), red },
-		{ XMFLOAT3(-0.5f, -0.25f, +0.0f), green },
-		{ XMFLOAT3(-0.5f, +0.25f, +0.0f), blue },
+		{ XMFLOAT3(+0.0f, +0.0f, +0.0f), uvs, normals },
+		{ XMFLOAT3(+0.0f, +0.5f, +0.0f), uvs, normals },
+		{ XMFLOAT3(+0.5f, +0.25f, +0.0f), uvs, normals },
+		{ XMFLOAT3(+0.5f, -0.25f, +0.0f), uvs, normals },
+		{ XMFLOAT3(+0.0f, -0.5f, +0.0f), uvs, normals },
+		{ XMFLOAT3(-0.5f, -0.25f, +0.0f), uvs, normals },
+		{ XMFLOAT3(-0.5f, +0.25f, +0.0f), uvs, normals },
 	};
 
 	//Order the vertices by their index number and pass them into the array
@@ -223,6 +228,7 @@ void Game::CreateBasicGeometry()
 	entities[5].ModifyPosition(XMFLOAT3(0, 0, 0));
 	entities[6].ModifyPosition(XMFLOAT3(1.5f, -1.5f, 0));
 	entities[7].ModifyPosition(XMFLOAT3(-2.25, -1.5f, 0));
+	*/
 }
 
 // --------------------------------------------------------
@@ -250,6 +256,7 @@ void Game::Update(float deltaTime, float totalTime)
 	//Camera
 	gameCamera.Update(deltaTime); //Update the camera
 
+	/*
 	//Update entity transformations
 	entities[0].ModifyRotation(XMFLOAT3(0, 0, .5f * deltaTime));
 	entities[1].ModifyPosition(XMFLOAT3(0, .001f, 0));
@@ -267,7 +274,8 @@ void Game::Update(float deltaTime, float totalTime)
 	entities[5].ModifyRotation(XMFLOAT3(0, 0, deltaTime));
 	entities[6].ModifyRotation(XMFLOAT3(.25f * deltaTime, .75f * deltaTime, .5f * deltaTime));
 	entities[7].ModifyPosition(XMFLOAT3(0, 0, -deltaTime / 2));
-}	
+	*/
+}
 
 // --------------------------------------------------------
 // Clear the screen, redraw everything, present to the user
