@@ -76,7 +76,7 @@ VertexToPixel main( VertexShaderInput input )
 
 	//Pass the normal through, applying transformations from the world matrix
 	//Only works with a uniform scale
-	output.normal = mul(input.normal, (float3x3)world);
+	output.normal = normalize(mul(input.normal, (float3x3)world));
 
 	// Whatever we return will make its way through the pipeline to the
 	// next programmable stage we're using (the pixel shader for now)

@@ -20,7 +20,7 @@ private:
 	Mesh* entityMesh;
 	Material* entityMaterial;
 
-	void PrepareMaterial(XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat, vector<DirectionalLight>* dirLights); //Prepare the material for this object
+	void PrepareMaterial(XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat); //Prepare the material for this object
 	void UpdateWorldMatrix(); //Update the world matrix
 
 public:
@@ -36,9 +36,10 @@ public:
 	void SetRotation(XMFLOAT3 rot);
 	XMFLOAT3 GetScale();
 	void SetScale(XMFLOAT3 scal);
+	Material* GetMaterial();
 
 	void ModifyPosition(XMFLOAT3 pos); //Translate this entity
 	void ModifyRotation(XMFLOAT3 rot); //Rotate this entity
 	void ModifyScale(XMFLOAT3 scal); //Scale this entity
-	void Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat, vector<DirectionalLight>* dirLights); //Draw this entity
+	void Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat); //Draw this entity
 };

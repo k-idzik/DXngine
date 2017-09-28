@@ -173,8 +173,8 @@ void Game::CreateLights()
 	//Ambient
 	//Diffuse
 	//Direction
-	dLights.push_back({ XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f) });
-	dLights.push_back({ XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.35f, 1.0f, 0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f) });
+	dLight0 = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f) };
+	dLight1 = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
 }
 
 // --------------------------------------------------------
@@ -203,20 +203,12 @@ void Game::Update(float deltaTime, float totalTime)
 	gameCamera.Update(deltaTime); //Update the camera
 
 	//Update entity transformations
-	entities[0].ModifyRotation(XMFLOAT3(0, 0, .5f * deltaTime));
-	entities[1].ModifyPosition(XMFLOAT3(0, .001f, 0));
-	entities[2].ModifyPosition(XMFLOAT3(0, 0, deltaTime));
-	if (entities[3].GetScale().x > .01f)
-		entities[3].ModifyScale(XMFLOAT3(-deltaTime, 0, 0));
-	else if (entities[3].GetScale().x <= .01f)
-		entities[3].ModifyScale(XMFLOAT3(0, -deltaTime, 0));
-	if (entities[3].GetScale().y < .01f)
-		entities[3].SetScale(XMFLOAT3(1, 1, 1));
-	entities[4].ModifyRotation(XMFLOAT3(-deltaTime, deltaTime, 0));
-	entities[5].ModifyScale(XMFLOAT3(deltaTime, deltaTime, 0));
-	if (entities[5].GetScale().x > 1.5f)
-		entities[5].SetScale(XMFLOAT3(1, 1, 1));
-	entities[5].ModifyRotation(XMFLOAT3(0, 0, deltaTime));
+	entities[0].ModifyRotation(XMFLOAT3(.5f * deltaTime, 0, 0));
+	entities[1].ModifyRotation(XMFLOAT3(0, .5f * deltaTime, 0));
+	entities[2].ModifyRotation(XMFLOAT3(0, 0, .5f * deltaTime));
+	entities[3].ModifyRotation(XMFLOAT3(.5f * deltaTime, .5f * deltaTime, 0));
+	entities[4].ModifyRotation(XMFLOAT3(.5f * deltaTime, 0, .5f * deltaTime));
+	entities[5].ModifyRotation(XMFLOAT3(0, .5f * deltaTime, .5f * deltaTime));
 }
 
 // --------------------------------------------------------
@@ -239,9 +231,20 @@ void Game::Draw(float deltaTime, float totalTime)
 
 	//Draw entities
 	for (int i = 0; i < entities.size(); i++)
-		//Draw the entities
+	{
+		//Send lighting data to the pixel shader
+		//Name of the variable in the shader
+		//The address of the light being passed in
+		//The size of the light struct being passed in
+		entities[i].GetMaterial()->GetPixelShader()->SetData("dirLight0", &dLight0, sizeof(DirectionalLight));
+		entities[i].GetMaterial()->GetPixelShader()->SetData("dirLight1", &dLight1, sizeof(DirectionalLight));
+
+		//Render the entities
+		//Prepares materials
 		//Updates world matrix
-		entities[i].Draw(context, &gameCamera.GetViewMatrix(), &gameCamera.GetProjectionMatrix(), &dLights);
+		//Sets buffers and draws
+		entities[i].Draw(context, &gameCamera.GetViewMatrix(), &gameCamera.GetProjectionMatrix());
+	}
 
 	//Show the back buffer to the user
 	//Do this exactly once, at the end of the frame

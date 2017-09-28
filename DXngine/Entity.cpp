@@ -67,6 +67,12 @@ void Entity::SetScale(XMFLOAT3 scal)
 	scale = scal;
 }
 
+//Get the material of this entity
+Material * Entity::GetMaterial()
+{
+	return entityMaterial;
+}
+
 //Move this entity
 void Entity::ModifyPosition(XMFLOAT3 pos)
 {
@@ -92,7 +98,7 @@ void Entity::ModifyScale(XMFLOAT3 scal)
 }
 
 //Prepare the material for this object
-void Entity::PrepareMaterial(XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat, vector<DirectionalLight>* dirLights)
+void Entity::PrepareMaterial(XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat)
 {
 	//Send data to shader variables
 	//Do this ONCE PER OBJECT you're drawing
@@ -102,14 +108,6 @@ void Entity::PrepareMaterial(XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat, vec
 	entityMaterial->GetVertexShader()->SetMatrix4x4("world", worldMatrix);
 	entityMaterial->GetVertexShader()->SetMatrix4x4("view", *viewMat);
 	entityMaterial->GetVertexShader()->SetMatrix4x4("projection", *projectionMat);
-
-	//Loop through each directional light and send it's data to the pixel shader
-	//Name of the variable in the shader
-	//The address of the light being passed in
-	//The size of the light struct being passed in
-//	for each (DirectionalLight dL in *dirLights)
-		entityMaterial->GetPixelShader()->SetData("dirLight0", &dirLights[0], sizeof(DirectionalLight));
-		entityMaterial->GetPixelShader()->SetData("dirLight1", &dirLights[1], sizeof(DirectionalLight));
 
 	//Once you've set all of the data you care to change for
 	//the next draw call, you need to actually send it to the GPU
@@ -138,10 +136,10 @@ void Entity::UpdateWorldMatrix()
 }
 
 //Draw this entity
-void Entity::Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat, vector<DirectionalLight>* dirLights)
+void Entity::Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat)
 {
 	//Prepare the material for this entity
-	PrepareMaterial(viewMat, projectionMat, dirLights);
+	PrepareMaterial(viewMat, projectionMat);
 
 	//Update the world matrix after all other updates are completed
 	UpdateWorldMatrix();
