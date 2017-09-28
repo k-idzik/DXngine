@@ -64,5 +64,5 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float4 calcedDirLight0 = calculateDirectionalLight(dirLight0, input.normal);
 	float4 calcedDirLight1 = calculateDirectionalLight(dirLight1, input.normal);
 
-	return calcedDirLight0 - calcedDirLight1;
+	return calcedDirLight0 + calcedDirLight1;
 }
