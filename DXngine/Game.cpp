@@ -169,12 +169,12 @@ void Game::CreateBasicGeometry()
 //Create lights for the engine
 void Game::CreateLights()
 {
-	//Initialize the lights
+	//Initialize the directional lights
 	//Ambient
 	//Diffuse
 	//Direction
-	dLight0 = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f) };
-	dLight1 = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
+	dLights[0] = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f) };
+	dLights[1] = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
 }
 
 // --------------------------------------------------------
@@ -236,8 +236,8 @@ void Game::Draw(float deltaTime, float totalTime)
 		//Name of the variable in the shader
 		//The address of the light being passed in
 		//The size of the light struct being passed in
-		entities[i].GetMaterial()->GetPixelShader()->SetData("dirLight0", &dLight0, sizeof(DirectionalLight));
-		entities[i].GetMaterial()->GetPixelShader()->SetData("dirLight1", &dLight1, sizeof(DirectionalLight));
+		entities[i].GetMaterial()->GetPixelShader()->SetData("dirLight0", &dLights[0], sizeof(DirectionalLight));
+		entities[i].GetMaterial()->GetPixelShader()->SetData("dirLight1", &dLights[1], sizeof(DirectionalLight));
 
 		//Render the entities
 		//Prepares materials

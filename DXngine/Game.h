@@ -39,8 +39,7 @@ private:
 	vector<Entity> entities;
 
 	//Initialize lights
-	DirectionalLight dLight0;
-	DirectionalLight dLight1;
+	DirectionalLight dLights[2];
 
 	//Initialize the camera
 	Camera gameCamera = Camera(width, height);
