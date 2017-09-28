@@ -107,8 +107,9 @@ void Entity::PrepareMaterial(XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat, vec
 	//Name of the variable in the shader
 	//The address of the light being passed in
 	//The size of the light struct being passed in
-	for each (DirectionalLight dL in *dirLights)
-		entityMaterial->GetPixelShader()->SetData("dirLight", &dL, sizeof(DirectionalLight));
+//	for each (DirectionalLight dL in *dirLights)
+		entityMaterial->GetPixelShader()->SetData("dirLight0", &dirLights[0], sizeof(DirectionalLight));
+		entityMaterial->GetPixelShader()->SetData("dirLight1", &dirLights[1], sizeof(DirectionalLight));
 
 	//Once you've set all of the data you care to change for
 	//the next draw call, you need to actually send it to the GPU

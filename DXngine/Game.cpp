@@ -174,6 +174,7 @@ void Game::CreateLights()
 	//Diffuse
 	//Direction
 	dLights.push_back({ XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f) });
+	dLights.push_back({ XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.35f, 1.0f, 0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f) });
 }
 
 // --------------------------------------------------------

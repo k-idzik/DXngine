@@ -30,8 +30,22 @@ struct DirectionalLight
 //Constant Buffers are bound to a register
 cbuffer lightingData : register(b0)
 {
-	DirectionalLight dirLight;
+	DirectionalLight dirLight0;
+	DirectionalLight dirLight1;
 };
+
+//Calculate the directional light
+float4 calculateDirectionalLight(DirectionalLight dL, float3 normies)
+{
+	float3 normalizedDirectionToLight = normalize(-dL.Direction); //Calculate the normalized firection to the light
+
+	//Calculate the amount of light with N dot L
+	//Clamp the result between 0 and 1
+	float directionalLightAmount = saturate(dot(normies, normalizedDirectionToLight));
+
+	//Return the calculated directional light
+	return (dL.DiffuseColor * directionalLightAmount) + dL.AmbientColor;
+}
 
 // --------------------------------------------------------
 // The entry point (main method) for our pixel shader
@@ -46,11 +60,9 @@ float4 main(VertexToPixel input) : SV_TARGET
 {
 	input.normal = normalize(input.normal); //Normalize the normal, it may be larger due to interpolation
 
-	float3 normalizedDirectionToLight = normalize(-dirLight.Direction); //Calculate the normalized firection to the light
+	//Calculate directional lights
+	float4 calcedDirLight0 = calculateDirectionalLight(dirLight0, input.normal);
+	float4 calcedDirLight1 = calculateDirectionalLight(dirLight1, input.normal);
 
-	//Calculate the amount of light with N dot L
-	//Clamp the result between 0 and 1
-	float directionalLightAmount = saturate(dot(input.normal, normalizedDirectionToLight));
-
-	return (dirLight.DiffuseColor * directionalLightAmount) + dirLight.AmbientColor;
+	return calcedDirLight0 - calcedDirLight1;
 }
