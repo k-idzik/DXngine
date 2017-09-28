@@ -36,7 +36,7 @@ private:
 	vector<Material*> materials;
 
 	//Initialize entities
-	vector<Entity> entities;
+	vector<Entity*> entities;
 
 	//Initialize lights
 	DirectionalLight dLights[2];

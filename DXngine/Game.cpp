@@ -58,7 +58,13 @@ Game::~Game()
 
 	//Delete entities
 	if (!entities.empty())
+	{
+		//Loop to make sure each entity is deleted
+		for each (Entity* ent in entities)
+			delete ent;
+
 		entities.clear();
+	}
 }
 
 // --------------------------------------------------------
@@ -150,20 +156,20 @@ void Game::CreateBasicGeometry()
 	meshes.push_back(new Mesh("../../Assets/Models/torus.obj", device));
 
 	//Add entities to the entities vector
-	entities.push_back(Entity(meshes[0], materials[0]));
-	entities.push_back(Entity(meshes[1], materials[0]));
-	entities.push_back(Entity(meshes[2], materials[0]));
-	entities.push_back(Entity(meshes[3], materials[0]));
-	entities.push_back(Entity(meshes[4], materials[0]));
-	entities.push_back(Entity(meshes[5], materials[0]));
+	entities.push_back(new Entity(meshes[0], materials[0]));
+	entities.push_back(new Entity(meshes[1], materials[0]));
+	entities.push_back(new Entity(meshes[2], materials[0]));
+	entities.push_back(new Entity(meshes[3], materials[0]));
+	entities.push_back(new Entity(meshes[4], materials[0]));
+	entities.push_back(new Entity(meshes[5], materials[0]));
 
 	//Arrange the models
-	entities[0].ModifyPosition(XMFLOAT3(-2.5f, 0, 0));
-	entities[1].ModifyPosition(XMFLOAT3(2, 1, 0));
-	entities[2].ModifyPosition(XMFLOAT3(-1, -1, 0));
-	entities[3].ModifyPosition(XMFLOAT3(-.5f, 1.5f, 0));
-	entities[4].ModifyPosition(XMFLOAT3(3, -1, 0));
-	entities[5].ModifyPosition(XMFLOAT3(0, 0, 0));
+	entities[0]->ModifyPosition(XMFLOAT3(-2.5f, 0, 0));
+	entities[1]->ModifyPosition(XMFLOAT3(2, 1, 0));
+	entities[2]->ModifyPosition(XMFLOAT3(-1, -1, 0));
+	entities[3]->ModifyPosition(XMFLOAT3(-.5f, 1.5f, 0));
+	entities[4]->ModifyPosition(XMFLOAT3(3, -1, 0));
+	entities[5]->ModifyPosition(XMFLOAT3(0, 0, 0));
 }
 
 //Create lights for the engine
@@ -203,12 +209,12 @@ void Game::Update(float deltaTime, float totalTime)
 	gameCamera.Update(deltaTime); //Update the camera
 
 	//Update entity transformations
-	entities[0].ModifyRotation(XMFLOAT3(.5f * deltaTime, 0, 0));
-	entities[1].ModifyRotation(XMFLOAT3(0, .5f * deltaTime, 0));
-	entities[2].ModifyRotation(XMFLOAT3(0, 0, .5f * deltaTime));
-	entities[3].ModifyRotation(XMFLOAT3(.5f * deltaTime, .5f * deltaTime, 0));
-	entities[4].ModifyRotation(XMFLOAT3(.5f * deltaTime, 0, .5f * deltaTime));
-	entities[5].ModifyRotation(XMFLOAT3(0, .5f * deltaTime, .5f * deltaTime));
+	entities[0]->ModifyRotation(XMFLOAT3(.5f * deltaTime, 0, 0));
+	entities[1]->ModifyRotation(XMFLOAT3(0, .5f * deltaTime, 0));
+	entities[2]->ModifyRotation(XMFLOAT3(0, 0, .5f * deltaTime));
+	entities[3]->ModifyRotation(XMFLOAT3(.5f * deltaTime, .5f * deltaTime, 0));
+	entities[4]->ModifyRotation(XMFLOAT3(.5f * deltaTime, 0, .5f * deltaTime));
+	entities[5]->ModifyRotation(XMFLOAT3(0, .5f * deltaTime, .5f * deltaTime));
 }
 
 // --------------------------------------------------------
@@ -236,14 +242,14 @@ void Game::Draw(float deltaTime, float totalTime)
 		//Name of the variable in the shader
 		//The address of the light being passed in
 		//The size of the light struct being passed in
-		entities[i].GetMaterial()->GetPixelShader()->SetData("dirLight0", &dLights[0], sizeof(DirectionalLight));
-		entities[i].GetMaterial()->GetPixelShader()->SetData("dirLight1", &dLights[1], sizeof(DirectionalLight));
+		entities[i]->GetMaterial()->GetPixelShader()->SetData("dirLight0", &dLights[0], sizeof(DirectionalLight));
+		entities[i]->GetMaterial()->GetPixelShader()->SetData("dirLight1", &dLights[1], sizeof(DirectionalLight));
 
 		//Render the entities
 		//Prepares materials
 		//Updates world matrix
 		//Sets buffers and draws
-		entities[i].Draw(context, &gameCamera.GetViewMatrix(), &gameCamera.GetProjectionMatrix());
+		entities[i]->Draw(context, &gameCamera.GetViewMatrix(), &gameCamera.GetProjectionMatrix());
 	}
 
 	//Show the back buffer to the user
