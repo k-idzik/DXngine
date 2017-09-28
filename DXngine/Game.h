@@ -7,6 +7,7 @@
 #include "Entity.h" //Entities
 #include "Camera.h" //Camera
 #include "Material.h" //Materials
+#include "Light.h" //Lights
 #include "Macro.h" //Macros
 
 //using namespace DirectX; //For the DirectX Math library
@@ -28,13 +29,6 @@ private:
 	// determining how far the mouse moved in a single frame.
 	POINT prevMousePos;
 
-	/*
-	//Initialize mesh objects to NULL to minimize problems later
-	Mesh* triangle = NULL;
-	Mesh* square = NULL;
-	Mesh* hexagon = NULL;
-	*/
-
 	//Initialize meshes
 	vector<Mesh*> meshes;
 
@@ -44,6 +38,9 @@ private:
 	//Initialize entities
 	vector<Entity> entities;
 
+	//Initialize lights
+	vector<DirectionalLight> dLights;
+
 	//Initialize the camera
 	Camera gameCamera = Camera(width, height);
 
@@ -51,6 +48,7 @@ private:
 	void LoadShaders();
 	void CreateMatrices();
 	void CreateBasicGeometry();
+	void CreateLights();
 
 public:
 	Game(HINSTANCE hInstance);

@@ -36,16 +36,6 @@ Game::Game(HINSTANCE hInstance)
 // --------------------------------------------------------
 Game::~Game()
 {
-	/*
-	//Delete mesh objects
-	if (triangle)
-		delete triangle;
-	if (square)
-		delete square;
-	if (hexagon)
-		delete hexagon;
-	*/
-
 	//Delete mesh objects
 	if (!meshes.empty())
 	{
@@ -83,18 +73,14 @@ void Game::Init()
 	LoadShaders();
 	CreateMatrices();
 
-	//Initialize the models (Visual Studio)
-	meshes.push_back(new Mesh("../../Assets/Models/cone.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/cube.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/cylinder.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/helix.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/sphere.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/torus.obj", device));
-
 	//Initialize the material
 	materials.push_back(new Material(vertexShader, pixelShader));
 
+	//Load models and initialize the geometry
 	CreateBasicGeometry();
+
+	//Initialize lights
+	CreateLights();
 
 	// Tell the input assembler stage of the pipeline what kind of
 	// geometric primitives (points, lines or triangles) we want to draw.  
@@ -116,8 +102,6 @@ void Game::LoadShaders()
 	pixelShader = new SimplePixelShader(device, context);
 	pixelShader->LoadShaderFile(L"PixelShader.cso");
 }
-
-
 
 // --------------------------------------------------------
 // Initializes the matrices necessary to represent our geometry's 
@@ -153,90 +137,17 @@ void Game::CreateMatrices()
 
 
 // --------------------------------------------------------
-// Creates the geometry we're going to draw - a single triangle for now
+// Creates the geometry we're going to draw
 // --------------------------------------------------------
 void Game::CreateBasicGeometry()
 {
-	/*
-	XMFLOAT2 uvs = XMFLOAT2(0, 0); //UV coordinates
-	XMFLOAT3 normals = XMFLOAT3(0, 0, 0); //Normals
-
-
-	///TRIANGLE
-	//Make vertices to pass into the mesh renderer
-	//When creating meshes, start them at the origin
-	Vertex triangleVertices[] =
-	{
-		{ XMFLOAT3(+0.0f, +0.5f, +0.0f), uvs, normals },
-		{ XMFLOAT3(+0.5f, -0.5f, +0.0f), uvs, normals },
-		{ XMFLOAT3(-0.5f, -0.5f, +0.0f), uvs, normals },
-	};
-
-	//Order the vertices by their index number and pass them into the array
-	unsigned int triangleIndices[] = { 0, 1, 2 };
-
-	//Pass the vertices, indices, device, and other data into the mesh renderer
-	triangle = new Mesh(triangleVertices, sizeofArray(triangleVertices), triangleIndices, sizeofArray(triangleIndices), device);
-
-	
-	///SQUARE
-	//Make vertices to pass into the mesh renderer
-	//When creating meshes, start them at the origin
-	Vertex squareVertices[] =
-	{
-		{ XMFLOAT3(-0.5f, +0.5f, +0.0f), uvs, normals },
-		{ XMFLOAT3(+0.5f, +0.5f, +0.0f), uvs, normals },
-		{ XMFLOAT3(+0.5f, -0.5f, +0.0f), uvs, normals },
-		{ XMFLOAT3(-0.5f, -0.5f, +0.0f), uvs, normals },
-	};
-
-	//Order the vertices by their index number and pass them into the array
-	unsigned int squareIndices[] = { 0, 1, 2, 0, 2, 3 };
-
-	//Pass the vertices, indices, device, and other data into the mesh renderer
-	square = new Mesh(squareVertices, sizeofArray(squareVertices), squareIndices, sizeofArray(squareIndices), device);
-
-
-	///HEXAGON
-	//Make vertices to pass into the mesh renderer
-	//When creating meshes, start them at the origin
-	Vertex hexagonVertices[] =
-	{
-		{ XMFLOAT3(+0.0f, +0.0f, +0.0f), uvs, normals },
-		{ XMFLOAT3(+0.0f, +0.5f, +0.0f), uvs, normals },
-		{ XMFLOAT3(+0.5f, +0.25f, +0.0f), uvs, normals },
-		{ XMFLOAT3(+0.5f, -0.25f, +0.0f), uvs, normals },
-		{ XMFLOAT3(+0.0f, -0.5f, +0.0f), uvs, normals },
-		{ XMFLOAT3(-0.5f, -0.25f, +0.0f), uvs, normals },
-		{ XMFLOAT3(-0.5f, +0.25f, +0.0f), uvs, normals },
-	};
-
-	//Order the vertices by their index number and pass them into the array
-	unsigned int hexagonIndices[] = { 0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 1 };
-
-	//Pass the vertices, indices, device, and other data into the mesh renderer
-	hexagon = new Mesh(hexagonVertices, sizeofArray(hexagonVertices), hexagonIndices, sizeofArray(hexagonIndices), device);
-	
-	//Add entities to the vector of entities
-	entities.push_back(Entity(triangle, matl));
-	entities.push_back(Entity(triangle, matl));
-	entities.push_back(Entity(square, matl));
-	entities.push_back(Entity(square, matl));
-	entities.push_back(Entity(square, matl));
-	entities.push_back(Entity(hexagon, matl));
-	entities.push_back(Entity(hexagon, matl));
-	entities.push_back(Entity(hexagon, matl));
-
-	//Move the triangle to it's new location
-	entities[0].ModifyPosition(XMFLOAT3(-2.5f, 0, 0));
-	entities[1].ModifyPosition(XMFLOAT3(2, 1, 0));
-	entities[2].ModifyPosition(XMFLOAT3(-1, -1, 0));
-	entities[3].ModifyPosition(XMFLOAT3(-.5f, 1.5f, 0));
-	entities[4].ModifyPosition(XMFLOAT3(3, -1, 0));
-	entities[5].ModifyPosition(XMFLOAT3(0, 0, 0));
-	entities[6].ModifyPosition(XMFLOAT3(1.5f, -1.5f, 0));
-	entities[7].ModifyPosition(XMFLOAT3(-2.25, -1.5f, 0));
-	*/
+	//Load the models from their files and add them to the meshes vector
+	meshes.push_back(new Mesh("../../Assets/Models/cone.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/cube.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/cylinder.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/helix.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/sphere.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/torus.obj", device));
 
 	//Add entities to the entities vector
 	entities.push_back(Entity(meshes[0], materials[0]));
@@ -253,6 +164,16 @@ void Game::CreateBasicGeometry()
 	entities[3].ModifyPosition(XMFLOAT3(-.5f, 1.5f, 0));
 	entities[4].ModifyPosition(XMFLOAT3(3, -1, 0));
 	entities[5].ModifyPosition(XMFLOAT3(0, 0, 0));
+}
+
+//Create lights for the engine
+void Game::CreateLights()
+{
+	//Initialize the lights
+	//Ambient
+	//Diffuse
+	//Direction
+	dLights.push_back({ XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f) });
 }
 
 // --------------------------------------------------------
@@ -317,13 +238,9 @@ void Game::Draw(float deltaTime, float totalTime)
 
 	//Draw entities
 	for (int i = 0; i < entities.size(); i++)
-	{
-		//Update the world matrix
-		entities[i].UpdateWorldMatrix();
-
-		//Draw the entities (also prepares materials)
-		entities[i].Draw(context, gameCamera.GetViewMatrix(), gameCamera.GetProjectionMatrix());
-	}
+		//Draw the entities
+		//Updates world matrix
+		entities[i].Draw(context, &gameCamera.GetViewMatrix(), &gameCamera.GetProjectionMatrix(), &dLights);
 
 	//Show the back buffer to the user
 	//Do this exactly once, at the end of the frame

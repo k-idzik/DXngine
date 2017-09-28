@@ -18,8 +18,6 @@ Camera::Camera(unsigned int width, unsigned int height)
 
 	//Initialize the projection matrix
 	UpdateProjectionMatrix(width, height);
-
-	//SetCursorPos(width, height);
 }
 
 //Destructor
