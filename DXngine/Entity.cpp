@@ -2,7 +2,8 @@
 ///Entities
 #include "Entity.h"
 
-Entity::Entity(Mesh* objectMesh, Material* objectMaterial) //Constructor
+//Constructor
+Entity::Entity(Mesh* objectMesh, Material* objectMaterial)
 {
 	//Initialize variables
 	XMStoreFloat4x4(&worldMatrix, XMMatrixIdentity()); //Store the identity matrix in the world matrix
@@ -13,72 +14,117 @@ Entity::Entity(Mesh* objectMesh, Material* objectMaterial) //Constructor
 	entityMaterial = objectMaterial;
 }
 
-Entity::~Entity() //Destructor
+//Destructor
+Entity::~Entity()
 {
 }
 
-XMFLOAT4X4 Entity::GetWorldMatrix() //Get the world matrix of this entity
+//Get the world matrix of this entity
+XMFLOAT4X4 Entity::GetWorldMatrix()
 {
 	return worldMatrix;
 }
 
-void Entity::SetWorldMatrix(XMFLOAT4X4 worldMat) //Set the world matrix of this entity
+//Set the world matrix of this entity
+void Entity::SetWorldMatrix(XMFLOAT4X4 worldMat)
 {
 	worldMatrix = worldMat;
 }
 
-XMFLOAT3 Entity::GetPosition() //Get the position of this entity
+//Get the position of this entity
+XMFLOAT3 Entity::GetPosition()
 {
 	return position;
 }
 
-void Entity::SetPosition(XMFLOAT3 pos) //Set the position of this entity
+//Set the position of this entity
+void Entity::SetPosition(XMFLOAT3 pos)
 {
 	position = pos;
 }
 
-XMFLOAT3 Entity::GetRotation() //Get the rotation of this entity
+//Get the rotation of this entity
+XMFLOAT3 Entity::GetRotation()
 {
 	return rotation;
 }
 
-void Entity::SetRotation(XMFLOAT3 rot) //Set the rotation of this entity
+//Set the rotation of this entity
+void Entity::SetRotation(XMFLOAT3 rot)
 {
 	rotation = rot;
 }
 
-XMFLOAT3 Entity::GetScale() //Get the scale of this entity
+//Get the scale of this entity
+XMFLOAT3 Entity::GetScale()
 {
 	return scale;
 }
 
-void Entity::SetScale(XMFLOAT3 scal) //Set the scale of this entity
+//Set the scale of this entity
+void Entity::SetScale(XMFLOAT3 scal)
 {
 	scale = scal;
 }
 
-void Entity::ModifyPosition(XMFLOAT3 pos) //Move this entity
+//Get the material of this entity
+Material * Entity::GetMaterial()
+{
+	return entityMaterial;
+}
+
+//Move this entity
+void Entity::ModifyPosition(XMFLOAT3 pos)
 {
 	position.x += pos.x;
 	position.y += pos.y;
 	position.z += pos.z;
 }
 
-void Entity::ModifyRotation(XMFLOAT3 rot) //Rotate this entity
+//Rotate this entity
+void Entity::ModifyRotation(XMFLOAT3 rot)
 {
 	rotation.x += rot.x;
 	rotation.y += rot.y;
 	rotation.z += rot.z;
 }
 
-void Entity::ModifyScale(XMFLOAT3 scal) //Scale this entity
+//Scale this entity
+void Entity::ModifyScale(XMFLOAT3 scal)
 {
 	scale.x += scal.x;
 	scale.y += scal.y;
 	scale.z += scal.z;
 }
 
-void Entity::UpdateWorldMatrix() //Update the world matrix
+//Prepare the material for this object
+void Entity::PrepareMaterial(XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat)
+{
+	//Send data to shader variables
+	//Do this ONCE PER OBJECT you're drawing
+	//This is actually a complex process of copying data to a local buffer
+	//and then copying that entire buffer to the GPU.  
+	//The "SimpleShader" class handles all of that for you.
+	entityMaterial->GetVertexShader()->SetMatrix4x4("world", worldMatrix);
+	entityMaterial->GetVertexShader()->SetMatrix4x4("view", *viewMat);
+	entityMaterial->GetVertexShader()->SetMatrix4x4("projection", *projectionMat);
+
+	//Once you've set all of the data you care to change for
+	//the next draw call, you need to actually send it to the GPU
+	//If you skip this, the "SetMatrix" calls above won't make it to the GPU!
+	entityMaterial->GetVertexShader()->CopyAllBufferData();
+	entityMaterial->GetPixelShader()->CopyAllBufferData();
+
+	//Set the vertex and pixel shaders to use for the next Draw() command
+	//These don't technically need to be set every frame...YET
+	//Once you start applying different shaders to different objects,
+	//you'll need to swap the current shaders before each draw
+	entityMaterial->GetVertexShader()->SetShader();
+	entityMaterial->GetPixelShader()->SetShader();
+}
+
+//Update the world matrix
+void Entity::UpdateWorldMatrix()
 {
 	XMMATRIX updatedTranslation = XMMatrixTranslation(position.x, position.y, position.z); //Calculate translation
 	XMMATRIX updatedRotation = XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z); //Calculate rotation
@@ -89,34 +135,14 @@ void Entity::UpdateWorldMatrix() //Update the world matrix
 	XMStoreFloat4x4(&worldMatrix, XMMatrixTranspose(updatedWorld)); //Transpose and store the updated matrix
 }
 
-void Entity::PrepareMaterial(XMFLOAT4X4 viewMat, XMFLOAT4X4 projectionMat) //Prepare the material for this object
+//Draw this entity
+void Entity::Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat)
 {
-	//Send data to shader variables
-	//Do this ONCE PER OBJECT you're drawing
-	//This is actually a complex process of copying data to a local buffer
-	//and then copying that entire buffer to the GPU.  
-	//The "SimpleShader" class handles all of that for you.
-	entityMaterial->GetVertexShader()->SetMatrix4x4("world", worldMatrix);
-	entityMaterial->GetVertexShader()->SetMatrix4x4("view", viewMat);
-	entityMaterial->GetVertexShader()->SetMatrix4x4("projection", projectionMat);
-
-	//Once you've set all of the data you care to change for
-	//the next draw call, you need to actually send it to the GPU
-	//If you skip this, the "SetMatrix" calls above won't make it to the GPU!
-	entityMaterial->GetVertexShader()->CopyAllBufferData();
-
-	//Set the vertex and pixel shaders to use for the next Draw() command
-	//These don't technically need to be set every frame...YET
-	//Once you start applying different shaders to different objects,
-	//you'll need to swap the current shaders before each draw
-	entityMaterial->GetVertexShader()->SetShader();
-	entityMaterial->GetPixelShader()->SetShader();
-}
-
-void Entity::Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4 viewMat, XMFLOAT4X4 projectionMat) //Draw this entity
-{
-	//Prepare the materials
+	//Prepare the material for this entity
 	PrepareMaterial(viewMat, projectionMat);
+
+	//Update the world matrix after all other updates are completed
+	UpdateWorldMatrix();
 
 	//Set values for buffers
 	UINT stride = sizeof(Vertex);

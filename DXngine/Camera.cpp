@@ -2,7 +2,8 @@
 ///First person camera
 #include "Camera.h"
 
-Camera::Camera(unsigned int width, unsigned int height) //Constructor
+//Constructor
+Camera::Camera(unsigned int width, unsigned int height)
 {
 	XMStoreFloat4x4(&viewMatrix, XMMatrixIdentity()); //Store the identity matrix in the view matrix
 	XMStoreFloat4x4(&projectionMatrix, XMMatrixIdentity()); //Store the identity matrix in the projection matrix
@@ -17,30 +18,33 @@ Camera::Camera(unsigned int width, unsigned int height) //Constructor
 
 	//Initialize the projection matrix
 	UpdateProjectionMatrix(width, height);
-
-	//SetCursorPos(width, height);
 }
 
-Camera::~Camera() //Destructor
+//Destructor
+Camera::~Camera()
 {
 }
 
-XMFLOAT4X4 Camera::GetViewMatrix() //Get the camera's view matrix
+//Get the camera's view matrix
+XMFLOAT4X4 Camera::GetViewMatrix()
 {
 	return viewMatrix;
 }
 
-XMFLOAT4X4 Camera::GetProjectionMatrix() //Get the camera's projection matrix
+//Get the camera's projection matrix
+XMFLOAT4X4 Camera::GetProjectionMatrix()
 {
 	return projectionMatrix;
 }
 
-void Camera::SetRotation(XMFLOAT3 rot) //Set the camera's rotation
+//Set the camera's rotation
+void Camera::SetRotation(XMFLOAT3 rot)
 {
 	
 }
 
-void Camera::KeyboardInput(float deltaTime) //Handles keyboard input
+//Handles keyboard input
+void Camera::KeyboardInput(float deltaTime)
 {
 	XMVECTOR normalizedForward = XMVector3Normalize(forward); //Create a normalized forward vector for movement
 	XMVECTOR up = XMVectorSet(0, 1, 0, 0); //The camera's up vector
@@ -68,7 +72,8 @@ void Camera::KeyboardInput(float deltaTime) //Handles keyboard input
 		position += up * movementSpeed * deltaTime;
 }
 
-void Camera::UpdateViewMatrix() //Updates the view matrix
+//Updates the view matrix
+void Camera::UpdateViewMatrix()
 {
 	XMVECTOR updatedRotation = XMQuaternionRotationRollPitchYaw(rotation.x, rotation.y, rotation.z); //Create a new rotation quaternion
 
@@ -80,14 +85,16 @@ void Camera::UpdateViewMatrix() //Updates the view matrix
 	XMStoreFloat4x4(&viewMatrix, XMMatrixTranspose(updatedViewMatrix)); //Transpose and update the camera's view matrix
 }
 
-void Camera::Update(float deltaTime) //Updates the camera's view matrix
+//Updates the camera's view matrix
+void Camera::Update(float deltaTime)
 {
 	UpdateViewMatrix();
 
 	KeyboardInput(deltaTime); //Handle keybaord input
 }
 
-void Camera::UpdateProjectionMatrix(unsigned int width, unsigned int height) //Updates the projection matrix
+//Updates the projection matrix
+void Camera::UpdateProjectionMatrix(unsigned int width, unsigned int height)
 {
 	//Matches the window's aspect ratio, updates on window resize
 	//Field of view angle
@@ -98,7 +105,8 @@ void Camera::UpdateProjectionMatrix(unsigned int width, unsigned int height) //U
 	XMStoreFloat4x4(&projectionMatrix, XMMatrixTranspose(P)); //Transpose for HLSL
 }
 
-void Camera::MouseInput(float xAxis, float yAxis) //Handles mouse input
+//Handles mouse input
+void Camera::MouseInput(float xAxis, float yAxis)
 {
 	//Scale the rotations in terms of radians
 	float xRadianized = -xAxis / 200;

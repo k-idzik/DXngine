@@ -1,3 +1,5 @@
+///Kevin Idzik, modified code from Chris Cascioli
+///Pixel shader
 
 // Struct representing the data we expect to receive from earlier pipeline stages
 // - Should match the output of our corresponding vertex shader
@@ -11,9 +13,39 @@ struct VertexToPixel
 	//  |   Name          Semantic
 	//  |    |                |
 	//  v    v                v
-	float4 position		: SV_POSITION;
-	float4 color		: COLOR;
+	float4 position	: SV_POSITION; //XYZW position (System Value Position)
+	float3 normal : NORMAL; //Normal to the triangle
 };
+
+//Defines a directional light
+struct DirectionalLight
+{
+	float4 AmbientColor; //Ambient lighting, should be subtle
+	float4 DiffuseColor; //Diffuse lighting, should be bright
+	float3 Direction; //Light direction, will be normalized in the shader
+};
+
+//Constant Buffer defines a buffer of individual variables to hold data from C++
+//Non-pipeline variables that get their values from C++ must be defined in a Constant Buffer
+//Constant Buffers are bound to a register
+cbuffer lightingData : register(b0)
+{
+	DirectionalLight dirLight0;
+	DirectionalLight dirLight1;
+};
+
+//Calculate the directional light
+float4 calculateDirectionalLight(DirectionalLight dL, float3 normies)
+{
+	float3 normalizedDirectionToLight = normalize(-dL.Direction); //Calculate the normalized firection to the light
+
+	//Calculate the amount of light with N dot L
+	//Clamp the result between 0 and 1
+	float directionalLightAmount = saturate(dot(normies, normalizedDirectionToLight));
+
+	//Return the calculated directional light
+	return (dL.DiffuseColor * directionalLightAmount) + dL.AmbientColor;
+}
 
 // --------------------------------------------------------
 // The entry point (main method) for our pixel shader
@@ -26,9 +58,11 @@ struct VertexToPixel
 // --------------------------------------------------------
 float4 main(VertexToPixel input) : SV_TARGET
 {
-	// Just return the input color
-	// - This color (like most values passing through the rasterizer) is 
-	//   interpolated for each pixel between the corresponding vertices 
-	//   of the triangle we're rendering
-	return input.color;
+	input.normal = normalize(input.normal); //Normalize the normal, it may be larger due to interpolation
+
+	//Calculate directional lights
+	float4 calcedDirLight0 = calculateDirectionalLight(dirLight0, input.normal);
+	float4 calcedDirLight1 = calculateDirectionalLight(dirLight1, input.normal);
+
+	return calcedDirLight0 + calcedDirLight1;
 }

@@ -7,12 +7,49 @@
 #include "Entity.h" //Entities
 #include "Camera.h" //Camera
 #include "Material.h" //Materials
+#include "Light.h" //Lights
 #include "Macro.h" //Macros
 
-using std::vector;
+//using namespace DirectX; //For the DirectX Math library
+using std::vector; //Vectors
 
 class Game : public DXCore
 {
+private:
+	// Wrappers for DirectX shaders to provide simplified functionality
+	SimpleVertexShader* vertexShader;
+	SimplePixelShader* pixelShader;
+
+	// The matrices to go from model space to screen space
+	XMFLOAT4X4 worldMatrix;
+	XMFLOAT4X4 viewMatrix;
+	XMFLOAT4X4 projectionMatrix;
+
+	// Keeps track of the old mouse position.  Useful for 
+	// determining how far the mouse moved in a single frame.
+	POINT prevMousePos;
+
+	//Initialize meshes
+	vector<Mesh*> meshes;
+
+	//Initialize materials
+	vector<Material*> materials;
+
+	//Initialize entities
+	vector<Entity*> entities;
+
+	//Initialize lights
+	DirectionalLight dLights[2];
+
+	//Initialize the camera
+	Camera gameCamera = Camera(width, height);
+
+	// Initialization helper methods - feel free to customize, combine, etc.
+	void LoadShaders();
+	void CreateMatrices();
+	void CreateBasicGeometry();
+	void CreateLights();
+
 public:
 	Game(HINSTANCE hInstance);
 	~Game();
@@ -29,37 +66,4 @@ public:
 	void OnMouseUp	 (WPARAM buttonState, int x, int y);
 	void OnMouseMove (WPARAM buttonState, int x, int y);
 	void OnMouseWheel(float wheelDelta,   int x, int y);
-
-private:
-	// Initialization helper methods - feel free to customize, combine, etc.
-	void LoadShaders(); 
-	void CreateMatrices();
-	void CreateBasicGeometry();
-
-	// Wrappers for DirectX shaders to provide simplified functionality
-	SimpleVertexShader* vertexShader;
-	SimplePixelShader* pixelShader;
-
-	// The matrices to go from model space to screen space
-	DirectX::XMFLOAT4X4 worldMatrix;
-	DirectX::XMFLOAT4X4 viewMatrix;
-	DirectX::XMFLOAT4X4 projectionMatrix;
-
-	// Keeps track of the old mouse position.  Useful for 
-	// determining how far the mouse moved in a single frame.
-	POINT prevMousePos;
-
-	//Initialize mesh objects to NULL to minimize problems later
-	Mesh* triangle = NULL;
-	Mesh* square = NULL;
-	Mesh* hexagon = NULL;
-
-	//Initialize materials
-	Material* matl = NULL;
-
-	//Initialize entities
-	vector<Entity> entities;
-
-	//Initialize the camera
-	Camera gameCamera = Camera(width, height);
 };
