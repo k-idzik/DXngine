@@ -20,6 +20,10 @@ private:
 	Mesh* entityMesh;
 	Material* entityMaterial;
 
+	//Set values for buffers
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
+
 	void PrepareMaterial(XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat); //Prepare the material for this object
 	void UpdateWorldMatrix(); //Update the world matrix
 

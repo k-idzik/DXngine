@@ -10,7 +10,6 @@
 #include "Light.h" //Lights
 #include "Macro.h" //Macros
 
-//using namespace DirectX; //For the DirectX Math library
 using std::vector; //Vectors
 
 class Game : public DXCore

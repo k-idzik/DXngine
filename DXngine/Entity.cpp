@@ -144,10 +144,6 @@ void Entity::Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4* viewMat, XMFLO
 	//Update the world matrix after all other updates are completed
 	UpdateWorldMatrix();
 
-	//Set values for buffers
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-
 	//Set the buffer for the current object
 	deviceContext->IASetVertexBuffers(0, 1, entityMesh->GetVertexBuffer(), &stride, &offset);
 	deviceContext->IASetIndexBuffer(entityMesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
