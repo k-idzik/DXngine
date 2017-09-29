@@ -12,11 +12,6 @@ Material::Material(SimpleVertexShader* vertShader, SimplePixelShader* pixShader)
 //Destructor
 Material::~Material()
 {
-	//Delete pointers
-	if (vertexShader)
-		delete vertexShader;
-	if (pixelShader)
-		delete pixelShader;
 }
 
 //Get the simple vertex shader

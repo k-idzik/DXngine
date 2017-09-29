@@ -36,6 +36,12 @@ Game::Game(HINSTANCE hInstance)
 // --------------------------------------------------------
 Game::~Game()
 {
+	//Free the vertex and pixel shader pointers
+	if (vertexShader)
+		delete vertexShader;
+	if (pixelShader)
+		delete pixelShader;
+
 	//Delete mesh objects
 	if (!meshes.empty())
 	{
