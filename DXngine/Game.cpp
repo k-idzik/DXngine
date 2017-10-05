@@ -71,12 +71,6 @@ Game::~Game()
 
 		entities.clear();
 	}
-
-	//Release DirectX texture resources
-	for (int i = 0; i < numSRVs; i++)
-		shaderResourceViews[i]->Release();
-
-	samplerState->Release();
 }
 
 // --------------------------------------------------------
@@ -114,23 +108,6 @@ void Game::LoadAssets()
 	meshes.push_back(new Mesh("../../Assets/Models/sphere.obj", device));
 	meshes.push_back(new Mesh("../../Assets/Models/torus.obj", device));
 
-	//Load the textures from their files
-	CreateWICTextureFromFile(device, context, L"../../Assets/Textures/aaaaaa.png", 0, &shaderResourceViews[0]);
-	CreateWICTextureFromFile(device, context, L"../../Assets/Textures/aaaaaa.png", 0, &shaderResourceViews[1]);
-
-	//Initialize the sampler description
-	samplerDescription = {}; //Make sure all values aren't garbage data
-	samplerDescription = {
-		D3D11_FILTER_MIN_MAG_MIP_LINEAR, //Filter
-		D3D11_TEXTURE_ADDRESS_WRAP, //AddressU
-		D3D11_TEXTURE_ADDRESS_WRAP, //AddressV
-		D3D11_TEXTURE_ADDRESS_WRAP, //AddressW
-	};
-	samplerDescription.MaxLOD = D3D11_FLOAT32_MAX; //MaxLOD
-
-	//Create the device's sampler state
-	device->CreateSamplerState(&samplerDescription, &samplerState);
-
 	//Load shaders from compiled shader object files
 	//Uses SimpleShader
 	vertexShader = new SimpleVertexShader(device, context);
@@ -139,8 +116,13 @@ void Game::LoadAssets()
 	pixelShader = new SimplePixelShader(device, context);
 	pixelShader->LoadShaderFile(L"PixelShader.cso");
 
-	//Initialize the materials
-	materials.push_back(new Material(vertexShader, pixelShader));
+	//Load the textures from their files and immediately put them into materials
+	ID3D11ShaderResourceView* shaderResourceView = NULL; //Temporarily holds the texture
+	CreateWICTextureFromFile(device, context, L"../../Assets/Textures/Marble.png", 0, &shaderResourceView); //Load texture from file
+	materials.push_back(new Material(device, vertexShader, pixelShader, shaderResourceView, "diffuseTexture", "basicSampler")); //Store texture in material
+	shaderResourceView = NULL; //Clear the texture just in case; it has already been stored
+	CreateWICTextureFromFile(device, context, L"../../Assets/Textures/BrickTexture.tif", 0, &shaderResourceView); //Load texture from file
+	materials.push_back(new Material(device, vertexShader, pixelShader, shaderResourceView, "diffuseTexture", "basicSampler")); //Store texture in material
 }
 
 // --------------------------------------------------------
@@ -183,11 +165,11 @@ void Game::CreateBasicGeometry()
 {
 	//Add entities to the entities vector
 	entities.push_back(new Entity(meshes[0], materials[0]));
-	entities.push_back(new Entity(meshes[1], materials[0]));
+	entities.push_back(new Entity(meshes[1], materials[1]));
 	entities.push_back(new Entity(meshes[2], materials[0]));
-	entities.push_back(new Entity(meshes[3], materials[0]));
+	entities.push_back(new Entity(meshes[3], materials[1]));
 	entities.push_back(new Entity(meshes[4], materials[0]));
-	entities.push_back(new Entity(meshes[5], materials[0]));
+	entities.push_back(new Entity(meshes[5], materials[1]));
 
 	//Arrange the models
 	entities[0]->ModifyPosition(XMFLOAT3(-2.5f, 0, 0));
@@ -205,8 +187,8 @@ void Game::CreateLights()
 	//Ambient
 	//Diffuse
 	//Direction
-	dLights[0] = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f) };
-	dLights[1] = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
+	dLights[0] = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f) };
+	dLights[1] = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
 }
 
 // --------------------------------------------------------

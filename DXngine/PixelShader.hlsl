@@ -14,6 +14,7 @@ struct VertexToPixel
 	//  |    |                |
 	//  v    v                v
 	float4 position	: SV_POSITION; //XYZW position (System Value Position)
+	float2 uv : TEXCOORD; //UVs
 	float3 normal : NORMAL; //Normal to the triangle
 };
 
@@ -33,6 +34,10 @@ cbuffer lightingData : register(b0)
 	DirectionalLight dirLight0;
 	DirectionalLight dirLight1;
 };
+
+//Variables to be set through C++
+Texture2D diffuseTexture : register(t0);
+SamplerState basicSampler : register(s0);
 
 //Calculate the directional light
 float4 calculateDirectionalLight(DirectionalLight dL, float3 normies)
@@ -64,5 +69,8 @@ float4 main(VertexToPixel input) : SV_TARGET
 	float4 calcedDirLight0 = calculateDirectionalLight(dirLight0, input.normal);
 	float4 calcedDirLight1 = calculateDirectionalLight(dirLight1, input.normal);
 
-	return calcedDirLight0 + calcedDirLight1;
+	//Sample the texture and use the resulting color in the lighting equation
+	float4 surfaceColor = diffuseTexture.Sample(basicSampler, input.uv);
+
+	return (calcedDirLight0 + calcedDirLight1) * surfaceColor;
 }

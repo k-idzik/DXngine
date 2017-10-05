@@ -6,7 +6,7 @@
 #include <vector> //Vectors
 #include "Mesh.h"
 #include "Material.h"
-#include "Light.h"
+//#include "Light.h"
 
 using namespace DirectX; //Less unnecessary repetition
 

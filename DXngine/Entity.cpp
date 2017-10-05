@@ -109,6 +109,9 @@ void Entity::PrepareMaterial(XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat)
 	entityMaterial->GetVertexShader()->SetMatrix4x4("view", *viewMat);
 	entityMaterial->GetVertexShader()->SetMatrix4x4("projection", *projectionMat);
 
+	//Send texture data to the pixel shader
+	entityMaterial->SendTextureDataToShader();
+
 	//Once you've set all of the data you care to change for
 	//the next draw call, you need to actually send it to the GPU
 	//If you skip this, the "SetMatrix" calls above won't make it to the GPU!
