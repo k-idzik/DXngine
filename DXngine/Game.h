@@ -1,6 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
+#include "WICTextureLoader.h" //Loading textures, part of DirectX
 #include "DXCore.h"
 #include "SimpleShader.h"
 #include "Mesh.h" //Mesh renderer
@@ -31,6 +32,9 @@ private:
 	//Initialize meshes
 	vector<Mesh*> meshes;
 
+	//Initialize SRVs
+	ID3D11ShaderResourceView* shaderResourceViews[2];
+
 	//Initialize materials
 	vector<Material*> materials;
 
@@ -44,6 +48,7 @@ private:
 	Camera gameCamera = Camera(width, height);
 
 	// Initialization helper methods - feel free to customize, combine, etc.
+	void LoadAssets();
 	void LoadShaders();
 	void CreateMatrices();
 	void CreateBasicGeometry();

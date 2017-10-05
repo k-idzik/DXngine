@@ -79,6 +79,9 @@ Game::~Game()
 // --------------------------------------------------------
 void Game::Init()
 {
+	//Load in the models and textures
+	LoadAssets();
+
 	// Helper methods for loading shaders, creating some basic
 	// geometry to draw and some simple camera matrices.
 	//  - You'll be expanding and/or replacing these later
@@ -98,6 +101,21 @@ void Game::Init()
 	// geometric primitives (points, lines or triangles) we want to draw.  
 	// Essentially: "What kind of shape should the GPU draw with our data?"
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+//Loads in assets
+void Game::LoadAssets()
+{
+	//Load the models from their files and add them to the meshes vector
+	meshes.push_back(new Mesh("../../Assets/Models/cone.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/cube.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/cylinder.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/helix.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/sphere.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/torus.obj", device));
+
+	CreateWICTextureFromFile(device, context, L"../../Assets/Textures/aaaaaa.png", 0, &shaderResourceViews[0]);
+	CreateWICTextureFromFile(device, context, L"../../Assets/Textures/aaaaaa.png", 0, &shaderResourceViews[1]);
 }
 
 // --------------------------------------------------------
@@ -153,14 +171,6 @@ void Game::CreateMatrices()
 // --------------------------------------------------------
 void Game::CreateBasicGeometry()
 {
-	//Load the models from their files and add them to the meshes vector
-	meshes.push_back(new Mesh("../../Assets/Models/cone.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/cube.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/cylinder.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/helix.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/sphere.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/torus.obj", device));
-
 	//Add entities to the entities vector
 	entities.push_back(new Entity(meshes[0], materials[0]));
 	entities.push_back(new Entity(meshes[1], materials[0]));

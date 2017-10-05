@@ -45,5 +45,5 @@ public:
 	void ModifyPosition(XMFLOAT3 pos); //Translate this entity
 	void ModifyRotation(XMFLOAT3 rot); //Rotate this entity
 	void ModifyScale(XMFLOAT3 scal); //Scale this entity
-	void Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat); //Draw this entity
+	void Draw(ID3D11DeviceContext* context, XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat); //Draw this entity
 };
