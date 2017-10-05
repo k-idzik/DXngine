@@ -71,6 +71,12 @@ Game::~Game()
 
 		entities.clear();
 	}
+
+	//Release DirectX texture resources
+	for (int i = 0; i < numSRVs; i++)
+		shaderResourceViews[i]->Release();
+
+	samplerState->Release();
 }
 
 // --------------------------------------------------------

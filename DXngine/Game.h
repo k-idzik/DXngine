@@ -33,7 +33,8 @@ private:
 	vector<Mesh*> meshes;
 
 	//Initialize SRVs
-	ID3D11ShaderResourceView* shaderResourceViews[2];
+	static const byte numSRVs = 2;
+	ID3D11ShaderResourceView* shaderResourceViews[numSRVs];
 
 	//Initialize sampler description and sampler state
 	D3D11_SAMPLER_DESC samplerDescription;
