@@ -35,6 +35,10 @@ private:
 	//Initialize SRVs
 	ID3D11ShaderResourceView* shaderResourceViews[2];
 
+	//Initialize sampler description and sampler state
+	D3D11_SAMPLER_DESC samplerDescription;
+	ID3D11SamplerState* samplerState;
+
 	//Initialize materials
 	vector<Material*> materials;
 
@@ -49,7 +53,6 @@ private:
 
 	// Initialization helper methods - feel free to customize, combine, etc.
 	void LoadAssets();
-	void LoadShaders();
 	void CreateMatrices();
 	void CreateBasicGeometry();
 	void CreateLights();

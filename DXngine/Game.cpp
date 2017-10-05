@@ -82,14 +82,8 @@ void Game::Init()
 	//Load in the models and textures
 	LoadAssets();
 
-	// Helper methods for loading shaders, creating some basic
-	// geometry to draw and some simple camera matrices.
-	//  - You'll be expanding and/or replacing these later
-	LoadShaders();
+	//Initializes matrices for transformations and camera
 	CreateMatrices();
-
-	//Initialize the material
-	materials.push_back(new Material(vertexShader, pixelShader));
 
 	//Load models and initialize the geometry
 	CreateBasicGeometry();
@@ -114,23 +108,33 @@ void Game::LoadAssets()
 	meshes.push_back(new Mesh("../../Assets/Models/sphere.obj", device));
 	meshes.push_back(new Mesh("../../Assets/Models/torus.obj", device));
 
+	//Load the textures from their files
 	CreateWICTextureFromFile(device, context, L"../../Assets/Textures/aaaaaa.png", 0, &shaderResourceViews[0]);
 	CreateWICTextureFromFile(device, context, L"../../Assets/Textures/aaaaaa.png", 0, &shaderResourceViews[1]);
-}
 
-// --------------------------------------------------------
-// Loads shaders from compiled shader object (.cso) files using
-// my SimpleShader wrapper for DirectX shader manipulation.
-// - SimpleShader provides helpful methods for sending
-//   data to individual variables on the GPU
-// --------------------------------------------------------
-void Game::LoadShaders()
-{
+	//Initialize the sampler description
+	samplerDescription = {}; //Make sure all values aren't garbage data
+	samplerDescription = {
+		D3D11_FILTER_MIN_MAG_MIP_LINEAR, //Filter
+		D3D11_TEXTURE_ADDRESS_WRAP, //AddressU
+		D3D11_TEXTURE_ADDRESS_WRAP, //AddressV
+		D3D11_TEXTURE_ADDRESS_WRAP, //AddressW
+	};
+	samplerDescription.MaxLOD = D3D11_FLOAT32_MAX; //MaxLOD
+
+	//Create the device's sampler state
+	device->CreateSamplerState(&samplerDescription, &samplerState);
+
+	//Load shaders from compiled shader object files
+	//Uses SimpleShader
 	vertexShader = new SimpleVertexShader(device, context);
 	vertexShader->LoadShaderFile(L"VertexShader.cso");
 
 	pixelShader = new SimplePixelShader(device, context);
 	pixelShader->LoadShaderFile(L"PixelShader.cso");
+
+	//Initialize the materials
+	materials.push_back(new Material(vertexShader, pixelShader));
 }
 
 // --------------------------------------------------------
