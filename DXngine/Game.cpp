@@ -71,6 +71,9 @@ Game::~Game()
 
 		entities.clear();
 	}
+
+	//Release DirectX texture resources
+	samplerState->Release();
 }
 
 // --------------------------------------------------------
@@ -116,13 +119,28 @@ void Game::LoadAssets()
 	pixelShader = new SimplePixelShader(device, context);
 	pixelShader->LoadShaderFile(L"PixelShader.cso");
 
+	//Initialize the sampler description
+	//Right now, there is only one sampler state
+	//If there were multiple, this would be moved to the Material class
+	samplerDescription = {}; //Make sure all values aren't garbage data
+	samplerDescription = {
+		D3D11_FILTER_MIN_MAG_MIP_LINEAR, //Filter
+		D3D11_TEXTURE_ADDRESS_WRAP, //AddressU
+		D3D11_TEXTURE_ADDRESS_WRAP, //AddressV
+		D3D11_TEXTURE_ADDRESS_WRAP, //AddressW
+	};
+	samplerDescription.MaxLOD = D3D11_FLOAT32_MAX; //MaxLOD
+
+	device->CreateSamplerState(&samplerDescription, &samplerState); //Create the device's sampler state
+	pixelShader->SetSamplerState("basicSampler", samplerState); //Send the sampler state to the pixel shader
+
 	//Load the textures from their files and immediately put them into materials
 	ID3D11ShaderResourceView* shaderResourceView = NULL; //Temporarily holds the texture
 	CreateWICTextureFromFile(device, context, L"../../Assets/Textures/Marble.png", 0, &shaderResourceView); //Load texture from file
-	materials.push_back(new Material(device, vertexShader, pixelShader, shaderResourceView, "diffuseTexture", "basicSampler")); //Store texture in material
+	materials.push_back(new Material(device, vertexShader, pixelShader, shaderResourceView, "diffuseTexture")); //Store texture in material
 	shaderResourceView = NULL; //Clear the texture just in case; it has already been stored
 	CreateWICTextureFromFile(device, context, L"../../Assets/Textures/BrickTexture.tif", 0, &shaderResourceView); //Load texture from file
-	materials.push_back(new Material(device, vertexShader, pixelShader, shaderResourceView, "diffuseTexture", "basicSampler")); //Store texture in material
+	materials.push_back(new Material(device, vertexShader, pixelShader, shaderResourceView, "diffuseTexture")); //Store texture in material
 }
 
 // --------------------------------------------------------
