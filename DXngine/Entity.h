@@ -6,7 +6,6 @@
 #include <vector> //Vectors
 #include "Mesh.h"
 #include "Material.h"
-#include "Light.h"
 
 using namespace DirectX; //Less unnecessary repetition
 
@@ -19,6 +18,10 @@ private:
 	XMFLOAT3 scale;
 	Mesh* entityMesh;
 	Material* entityMaterial;
+
+	//Set values for buffers
+	UINT stride = sizeof(Vertex);
+	UINT offset = 0;
 
 	void PrepareMaterial(XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat); //Prepare the material for this object
 	void UpdateWorldMatrix(); //Update the world matrix
@@ -41,5 +44,5 @@ public:
 	void ModifyPosition(XMFLOAT3 pos); //Translate this entity
 	void ModifyRotation(XMFLOAT3 rot); //Rotate this entity
 	void ModifyScale(XMFLOAT3 scal); //Scale this entity
-	void Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat); //Draw this entity
+	void Draw(ID3D11DeviceContext* context, XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat); //Draw this entity
 };

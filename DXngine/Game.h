@@ -1,6 +1,7 @@
 #pragma once
 
 #include <DirectXMath.h>
+#include "WICTextureLoader.h" //Loading textures, part of DirectX
 #include "DXCore.h"
 #include "SimpleShader.h"
 #include "Mesh.h" //Mesh renderer
@@ -10,7 +11,6 @@
 #include "Light.h" //Lights
 #include "Macro.h" //Macros
 
-//using namespace DirectX; //For the DirectX Math library
 using std::vector; //Vectors
 
 class Game : public DXCore
@@ -32,6 +32,11 @@ private:
 	//Initialize meshes
 	vector<Mesh*> meshes;
 
+	//Initialize sampler description
+	//Initialize sampler state, defines how we interact with the texture
+	D3D11_SAMPLER_DESC samplerDescription;
+	ID3D11SamplerState* samplerState;
+
 	//Initialize materials
 	vector<Material*> materials;
 
@@ -45,7 +50,7 @@ private:
 	Camera gameCamera = Camera(width, height);
 
 	// Initialization helper methods - feel free to customize, combine, etc.
-	void LoadShaders();
+	void LoadAssets();
 	void CreateMatrices();
 	void CreateBasicGeometry();
 	void CreateLights();

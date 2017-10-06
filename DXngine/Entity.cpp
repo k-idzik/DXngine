@@ -109,6 +109,9 @@ void Entity::PrepareMaterial(XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat)
 	entityMaterial->GetVertexShader()->SetMatrix4x4("view", *viewMat);
 	entityMaterial->GetVertexShader()->SetMatrix4x4("projection", *projectionMat);
 
+	//Send texture data to the pixel shader
+	entityMaterial->SendTextureDataToShader();
+
 	//Once you've set all of the data you care to change for
 	//the next draw call, you need to actually send it to the GPU
 	//If you skip this, the "SetMatrix" calls above won't make it to the GPU!
@@ -136,7 +139,7 @@ void Entity::UpdateWorldMatrix()
 }
 
 //Draw this entity
-void Entity::Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat)
+void Entity::Draw(ID3D11DeviceContext* context, XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat)
 {
 	//Prepare the material for this entity
 	PrepareMaterial(viewMat, projectionMat);
@@ -144,17 +147,13 @@ void Entity::Draw(ID3D11DeviceContext* deviceContext, XMFLOAT4X4* viewMat, XMFLO
 	//Update the world matrix after all other updates are completed
 	UpdateWorldMatrix();
 
-	//Set values for buffers
-	UINT stride = sizeof(Vertex);
-	UINT offset = 0;
-
 	//Set the buffer for the current object
-	deviceContext->IASetVertexBuffers(0, 1, entityMesh->GetVertexBuffer(), &stride, &offset);
-	deviceContext->IASetIndexBuffer(entityMesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+	context->IASetVertexBuffers(0, 1, entityMesh->GetVertexBuffer(), &stride, &offset);
+	context->IASetIndexBuffer(entityMesh->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
 	//Draw the object, passing in the number of vertices
 	//DrawIndexed() uses the currently set index buffer to look up corresponding vertices in the currently set VERTEX BUFFER
-	deviceContext->DrawIndexed(
+	context->DrawIndexed(
 		entityMesh->GetIndexCount(), //The number of indices to use (we could draw a subset if we wanted)
 		0, //Offset to the first index we want to use
 		0); //Offset to add to each index when looking up vertices

@@ -71,6 +71,9 @@ Game::~Game()
 
 		entities.clear();
 	}
+
+	//Release DirectX texture resources
+	samplerState->Release();
 }
 
 // --------------------------------------------------------
@@ -79,14 +82,11 @@ Game::~Game()
 // --------------------------------------------------------
 void Game::Init()
 {
-	// Helper methods for loading shaders, creating some basic
-	// geometry to draw and some simple camera matrices.
-	//  - You'll be expanding and/or replacing these later
-	LoadShaders();
-	CreateMatrices();
+	//Load in the models and textures
+	LoadAssets();
 
-	//Initialize the material
-	materials.push_back(new Material(vertexShader, pixelShader));
+	//Initializes matrices for transformations and camera
+	CreateMatrices();
 
 	//Load models and initialize the geometry
 	CreateBasicGeometry();
@@ -100,19 +100,47 @@ void Game::Init()
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-// --------------------------------------------------------
-// Loads shaders from compiled shader object (.cso) files using
-// my SimpleShader wrapper for DirectX shader manipulation.
-// - SimpleShader provides helpful methods for sending
-//   data to individual variables on the GPU
-// --------------------------------------------------------
-void Game::LoadShaders()
+//Loads in assets
+void Game::LoadAssets()
 {
+	//Load the models from their files and add them to the meshes vector
+	meshes.push_back(new Mesh("../../Assets/Models/cone.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/cube.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/cylinder.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/helix.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/sphere.obj", device));
+	meshes.push_back(new Mesh("../../Assets/Models/torus.obj", device));
+
+	//Load shaders from compiled shader object files
+	//Uses SimpleShader
 	vertexShader = new SimpleVertexShader(device, context);
 	vertexShader->LoadShaderFile(L"VertexShader.cso");
 
 	pixelShader = new SimplePixelShader(device, context);
 	pixelShader->LoadShaderFile(L"PixelShader.cso");
+
+	//Initialize the sampler description
+	//Right now, there is only one sampler state
+	//If there were multiple, this would be moved to the Material class
+	samplerDescription = {}; //Make sure all values aren't garbage data
+	samplerDescription = {
+		D3D11_FILTER_MIN_MAG_MIP_LINEAR, //Filter
+		D3D11_TEXTURE_ADDRESS_WRAP, //AddressU
+		D3D11_TEXTURE_ADDRESS_WRAP, //AddressV
+		D3D11_TEXTURE_ADDRESS_WRAP, //AddressW
+	};
+	samplerDescription.MaxLOD = D3D11_FLOAT32_MAX; //MaxLOD
+
+	device->CreateSamplerState(&samplerDescription, &samplerState); //Create the device's sampler state
+	pixelShader->SetSamplerState("basicSampler", samplerState); //Send the sampler state to the pixel shader
+
+	//Load the textures from their files and immediately put them into materials
+	ID3D11ShaderResourceView* shaderResourceView = NULL; //Temporarily holds the texture
+	CreateWICTextureFromFile(device, context, L"../../Assets/Textures/Marble.png", 0, &shaderResourceView); //Load texture from file
+	materials.push_back(new Material(device, vertexShader, pixelShader, shaderResourceView, "diffuseTexture")); //Store texture in material
+	shaderResourceView = NULL; //Clear the texture just in case; it has already been stored
+	CreateWICTextureFromFile(device, context, L"../../Assets/Textures/BrickTexture.tif", 0, &shaderResourceView); //Load texture from file
+	materials.push_back(new Material(device, vertexShader, pixelShader, shaderResourceView, "diffuseTexture")); //Store texture in material
 }
 
 // --------------------------------------------------------
@@ -153,21 +181,13 @@ void Game::CreateMatrices()
 // --------------------------------------------------------
 void Game::CreateBasicGeometry()
 {
-	//Load the models from their files and add them to the meshes vector
-	meshes.push_back(new Mesh("../../Assets/Models/cone.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/cube.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/cylinder.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/helix.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/sphere.obj", device));
-	meshes.push_back(new Mesh("../../Assets/Models/torus.obj", device));
-
 	//Add entities to the entities vector
 	entities.push_back(new Entity(meshes[0], materials[0]));
-	entities.push_back(new Entity(meshes[1], materials[0]));
+	entities.push_back(new Entity(meshes[1], materials[1]));
 	entities.push_back(new Entity(meshes[2], materials[0]));
-	entities.push_back(new Entity(meshes[3], materials[0]));
+	entities.push_back(new Entity(meshes[3], materials[1]));
 	entities.push_back(new Entity(meshes[4], materials[0]));
-	entities.push_back(new Entity(meshes[5], materials[0]));
+	entities.push_back(new Entity(meshes[5], materials[1]));
 
 	//Arrange the models
 	entities[0]->ModifyPosition(XMFLOAT3(-2.5f, 0, 0));
@@ -185,8 +205,8 @@ void Game::CreateLights()
 	//Ambient
 	//Diffuse
 	//Direction
-	dLights[0] = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f) };
-	dLights[1] = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
+	dLights[0] = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, -1.0f, 0.0f) };
+	dLights[1] = { XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f) };
 }
 
 // --------------------------------------------------------
