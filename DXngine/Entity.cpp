@@ -141,11 +141,11 @@ void Entity::UpdateWorldMatrix()
 //Draw this entity
 void Entity::Draw(ID3D11DeviceContext* context, XMFLOAT4X4* viewMat, XMFLOAT4X4* projectionMat)
 {
+	//Update the world matrix
+	UpdateWorldMatrix();
+
 	//Prepare the material for this entity
 	PrepareMaterial(viewMat, projectionMat);
-
-	//Update the world matrix after all other updates are completed
-	UpdateWorldMatrix();
 
 	//Set the buffer for the current object
 	context->IASetVertexBuffers(0, 1, entityMesh->GetVertexBuffer(), &stride, &offset);
