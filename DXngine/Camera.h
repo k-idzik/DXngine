@@ -4,6 +4,7 @@
 
 #include <DirectXMath.h> //DXMath library
 #include <Windows.h> //Input
+#include "Macro.h"
 
 using namespace DirectX; //Less unnecessary repetition
 
@@ -15,19 +16,23 @@ private:
 
 	//XMVECTOR and XMMATRIX are used for calculation
 	//XMFLOAT3 is used for storage/passing the data around
-	//Could make these XMFLOAT3, but this would require more method calls in the class
-	XMVECTOR position; //The camera's position
-	XMVECTOR forward; //The camera's forward vector
-
+	XMFLOAT3 position; //The camera's position
 	XMFLOAT3 rotation; //The camera's rotation
-	float movementSpeed; //The camera's movement speed
-	float rotationSpeed; //The camera's rotation speed
+	XMFLOAT3 forward; //The camera's forward vector
+	XMFLOAT3 right; //The camera's right vector
+	XMFLOAT3 up; //The camera's up vector
+
+	//BYTE VALUES MUST BE BETWEEN 0 AND 255
+	//UNSIGNED SHORT VALUES MUST BE BETWEEN 0 AND 65535
+	byte movementSpeed; //The camera's movement speed
+	unsigned short mouseSensitivity; //Mouse sensitivity, determines the camera's rotation speed
 
 	void KeyboardInput(float deltaTime); //Handles keyboard input
 	void UpdateViewMatrix(); //Updates the view matrix
 
 public:
-	Camera(unsigned int width, unsigned int height); //Constructor
+	Camera(); //Constructor
+	Camera(unsigned int width, unsigned int height); //Parameterized constructor
 	~Camera(); //Destructor
 
 	//Accessors and mutators

@@ -47,7 +47,7 @@ private:
 	DirectionalLight dLights[2];
 
 	//Initialize the camera
-	Camera gameCamera = Camera(width, height);
+	Camera gameCamera;
 
 	// Initialization helper methods - feel free to customize, combine, etc.
 	void LoadAssets();

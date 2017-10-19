@@ -88,6 +88,8 @@ void Game::Init()
 	//Initializes matrices for transformations and camera
 	CreateMatrices();
 
+	gameCamera = Camera(width, height); //Initialize the camera
+
 	//Load models and initialize the geometry
 	CreateBasicGeometry();
 
