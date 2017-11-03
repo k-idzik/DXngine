@@ -32,10 +32,11 @@ private:
 	//Initialize meshes
 	vector<Mesh*> meshes;
 
-	//Initialize sampler description
+	//Render states
 	//Initialize sampler state, defines how we interact with the texture
-	D3D11_SAMPLER_DESC samplerDescription;
+	//Initialize raster state
 	ID3D11SamplerState* samplerState;
+	//ID3D11RasterizerState* rasterState;
 
 	//Initialize materials
 	vector<Material*> materials;

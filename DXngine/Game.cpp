@@ -72,8 +72,9 @@ Game::~Game()
 		entities.clear();
 	}
 
-	//Release DirectX texture resources
+	//Release DirectX render states
 	samplerState->Release();
+	//rasterState->Release();
 }
 
 // --------------------------------------------------------
@@ -121,10 +122,11 @@ void Game::LoadAssets()
 	pixelShader = new SimplePixelShader(device, context);
 	pixelShader->LoadShaderFile(L"PixelShader.cso");
 
+	//DESCRIPTIONS SHOULD BE LOCAL
 	//Initialize the sampler description
 	//Right now, there is only one sampler state
 	//If there were multiple, this would be moved to the Material class
-	samplerDescription = {}; //Make sure all values aren't garbage data
+	D3D11_SAMPLER_DESC samplerDescription = {}; //Make sure all values aren't garbage data
 	samplerDescription = {
 		D3D11_FILTER_MIN_MAG_MIP_LINEAR, //Filter
 		D3D11_TEXTURE_ADDRESS_WRAP, //AddressU
@@ -132,9 +134,18 @@ void Game::LoadAssets()
 		D3D11_TEXTURE_ADDRESS_WRAP, //AddressW
 	};
 	samplerDescription.MaxLOD = D3D11_FLOAT32_MAX; //MaxLOD
-
 	device->CreateSamplerState(&samplerDescription, &samplerState); //Create the device's sampler state
 	pixelShader->SetSamplerState("basicSampler", samplerState); //Send the sampler state to the pixel shader
+
+	////Initialize the rasterizer description, allows for backface culling
+	//D3D11_RASTERIZER_DESC rasterizerDescription = {};
+	//rasterizerDescription = {
+	//	D3D11_FILL_SOLID,
+	//	D3D11_CULL_BACK,
+	//	false,
+	//};
+	//device->CreateRasterizerState(&rasterizerDescription, &rasterState); //Create the device's rasterizer state
+	//context->RSSetState(rasterState); //Set the raster state for the entire program
 
 	//Load the textures from their files and immediately put them into materials
 	ID3D11ShaderResourceView* shaderResourceView = NULL; //Temporarily holds the texture
@@ -327,7 +338,8 @@ void Game::OnMouseUp(WPARAM buttonState, int x, int y)
 void Game::OnMouseMove(WPARAM buttonState, int x, int y)
 {
 	//When the left mouse button is held down
-	if (buttonState && 0x0001)
+	//Right, this is a bit mask
+	if (buttonState & 0x0001)
 	{
 		//Move the camera with the mouse
 		float nextX = x - (float)prevMousePos.x;
