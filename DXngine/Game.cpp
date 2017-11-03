@@ -338,7 +338,8 @@ void Game::OnMouseUp(WPARAM buttonState, int x, int y)
 void Game::OnMouseMove(WPARAM buttonState, int x, int y)
 {
 	//When the left mouse button is held down
-	if (buttonState && 0x0001)
+	//Right, this is a bit mask
+	if (buttonState & 0x0001)
 	{
 		//Move the camera with the mouse
 		float nextX = x - (float)prevMousePos.x;
